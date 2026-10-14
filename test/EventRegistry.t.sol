@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.24;
+pragma solidity ^0.8.24;
 
-import {Test, Vm} from "forge-std/Test.sol";
 import {EventRegistry} from "../src/EventRegistry.sol";
 
 /// @notice Tests for the event-only design. Run with:  forge test --match-contract EventRegistry -vv
