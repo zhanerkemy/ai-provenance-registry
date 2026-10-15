@@ -5,3 +5,4 @@ web3==7.6.0
 huggingface_hub==0.26.2
 python-dotenv==1.0.1
 pytest==9.1.1
+pycryptodome==3.24.1
