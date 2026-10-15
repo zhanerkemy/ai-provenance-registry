@@ -3,14 +3,20 @@
 Usage:
     python src/hash_file.py path/to/model.safetensors
     python src/hash_file.py path/to/model_folder/
+    python src/hash_file.py path/to/model_folder/ --weights-only
 
 For a single file, the result is the ordinary SHA-256 of its bytes, identical to
 what `sha256sum` (Linux) or `shasum -a 256` (macOS) prints.
 
 Many models are folders of several files (config.json, weight shards, ...).
 For a folder we hash every file, write one line "<relative/path> <file hash>" per
-file in sorted order, and hash that list. Any change to any file's content, a
-renamed file, or an added or removed file therefore changes the result.
+file, sorted by path, and hash that list (the "manifest"). Any change to any file's
+content, a renamed file, or an added or removed file therefore changes the result.
+
+--weights-only keeps only weight files (.safetensors, .bin, .gguf, ...). This is the
+fingerprint we register on-chain, because the Hugging Face Hub publishes the SHA-256
+of exactly these files. A model downloaded from the Hub, hashed with --weights-only,
+gives the same value as src/hf_lineage.py computed from the Hub's metadata.
 
 The output is printed with a "0x" prefix because that is how Solidity expects a
 bytes32 value, e.g. registerModel(0x3f2a..., ...).
@@ -18,9 +24,28 @@ bytes32 value, e.g. registerModel(0x3f2a..., ...).
 
 import argparse
 import hashlib
+from collections.abc import Iterable
 from pathlib import Path
 
 CHUNK_SIZE = 1024 * 1024  # read 1 MB at a time, so multi-GB files never fill memory
+
+# File types that hold model weights. Config and tokenizer files are left out.
+WEIGHT_EXTENSIONS = (
+    ".safetensors",
+    ".bin",
+    ".gguf",
+    ".pt",
+    ".pth",
+    ".ckpt",
+    ".h5",
+    ".msgpack",
+    ".onnx",
+)
+
+
+def is_weight_file(path: str) -> bool:
+    """True if the file name looks like a weights file (case-insensitive)."""
+    return path.lower().endswith(WEIGHT_EXTENSIONS)
 
 
 def hash_file(path: Path) -> str:
@@ -32,33 +57,50 @@ def hash_file(path: Path) -> str:
     return h.hexdigest()
 
 
-def hash_directory(folder: Path) -> str:
-    """Return one SHA-256 for a whole folder, built from a sorted manifest of its files."""
-    files = sorted(p for p in folder.rglob("*") if p.is_file())
-    if not files:
-        raise ValueError(f"{folder} contains no files")
+def manifest_hash(entries: Iterable[tuple[str, str]]) -> str:
+    """Hash a list of (relative path, file SHA-256) pairs into one SHA-256.
 
-    # Use "/" in paths on every OS, so Windows and macOS give the same result.
-    manifest = "".join(
-        f"{p.relative_to(folder).as_posix()} {hash_file(p)}\n" for p in files
-    )
+    Paths use "/" and are sorted as plain strings, so the result is the same on every
+    operating system and every Python version, and whether the file hashes were
+    computed locally or read from the Hugging Face Hub.
+    """
+    lines = sorted(entries)
+    if not lines:
+        raise ValueError("cannot fingerprint an empty list of files")
+    manifest = "".join(f"{path} {digest}\n" for path, digest in lines)
     return hashlib.sha256(manifest.encode("utf-8")).hexdigest()
 
 
-def fingerprint(path: Path) -> str:
+def hash_directory(folder: Path, weights_only: bool = False) -> str:
+    """Return one SHA-256 for a whole folder, built from a sorted manifest of its files."""
+    files = [p for p in folder.rglob("*") if p.is_file()]
+    if weights_only:
+        files = [p for p in files if is_weight_file(p.name)]
+    if not files:
+        kind = "weight files" if weights_only else "files"
+        raise ValueError(f"{folder} contains no {kind}")
+    return manifest_hash((p.relative_to(folder).as_posix(), hash_file(p)) for p in files)
+
+
+def fingerprint(path: Path, weights_only: bool = False) -> str:
     """Hash a file or a folder, whichever the path points to."""
     if path.is_file():
         return hash_file(path)
     if path.is_dir():
-        return hash_directory(path)
+        return hash_directory(path, weights_only)
     raise FileNotFoundError(f"No such file or folder: {path}")
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="SHA-256 fingerprint for ModelRegistry.")
     parser.add_argument("path", type=Path, help="file or folder to hash")
+    parser.add_argument(
+        "--weights-only",
+        action="store_true",
+        help="for a folder, hash only weight files (matches the Hub-derived fingerprint)",
+    )
     args = parser.parse_args()
-    print("0x" + fingerprint(args.path))
+    print("0x" + fingerprint(args.path, args.weights_only))
 
 
 if __name__ == "__main__":
