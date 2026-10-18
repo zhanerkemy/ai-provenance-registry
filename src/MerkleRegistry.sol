@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.24;
+pragma solidity ^0.8.24;
 
 /// @title MerkleRegistry
 /// @notice Design 3 of 3: register many models with ONE transaction. The records are
