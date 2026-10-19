@@ -2,7 +2,8 @@
 pragma solidity ^0.8.24;
 
 import {EventRegistry} from "../src/EventRegistry.sol";
-import {Test} from "forge-std/Test.sol";
+import {Test} from "lib/forge-std/src/Test.sol";
+import {Vm} from "lib/forge-std/src/Vm.sol";
 
 /// @notice Tests for the event-only design. Run with:  forge test --match-contract EventRegistry -vv
 contract EventRegistryTest is Test {

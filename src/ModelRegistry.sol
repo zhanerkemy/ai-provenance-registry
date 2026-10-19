@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.24;
+pragma solidity ^0.8.24;
 
 /// @title ModelRegistry
 /// @notice Records AI models on-chain: who registered them, fingerprints (hashes) of

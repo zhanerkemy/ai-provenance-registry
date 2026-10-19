@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {Test} from "forge-std/Test.sol";
+import {Test} from "lib/forge-std/src/Test.sol";
 import {MerkleRegistry} from "../src/MerkleRegistry.sol";
 
 /// @notice Tests for the Merkle-batch design. Run with:  forge test --match-contract MerkleRegistry -vv
