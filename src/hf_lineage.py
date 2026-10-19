@@ -1,38 +1,3 @@
-"""Download one real model family tree from the Hugging Face Hub into a CSV file.
-
-Usage (from the repository root):
-    python src/hf_lineage.py --base HuggingFaceTB/SmolLM2-135M
-    python src/hf_lineage.py --base HuggingFaceTB/SmolLM2-135M --max-models 300 --max-depth 4
-
-Output:
-    data/hf_tree.csv        one row per model, parents always before their children
-    data/hf_tree_meta.json  when and how the tree was pulled (Stage 4: record the data date)
-
-How the tree is found
----------------------
-When someone uploads a fine-tune to the Hub they can declare its base model. The Hub
-turns that into a tag such as "base_model:finetune:HuggingFaceTB/SmolLM2-135M". The
-relation part is one of: finetune, adapter (e.g. LoRA), quantized (smaller-precision
-copy) or merge (combination of several models). Starting from the base model we ask
-the Hub for every model tagged as its child, then their children, and so on
-(breadth-first), until --max-models or --max-depth is reached.
-
-What we record for each model
------------------------------
-weights_hash   SHA-256 manifest of the model's weight files. The Hub publishes the
-               SHA-256 of every large (LFS) file, so no weights are downloaded.
-               Same scheme as `python src/hash_file.py <folder> --weights-only`.
-data_ref_hash  SHA-256 of the *names* of the training datasets declared in the model
-               card. This is a reference, not a fingerprint of the data content: the
-               Hub does not publish content hashes for datasets. (Limitation.)
-status         ok               can be registered
-               multi_parent     declares several base models (e.g. merges); our
-                                contracts record exactly one parent
-               no_weight_files  no weight files with a published SHA-256
-               error            the Hub refused or failed the request (private, removed...)
-
-Set HF_TOKEN in a .env file if you hit rate limits; it is optional.
-"""
 
 from __future__ import annotations
 

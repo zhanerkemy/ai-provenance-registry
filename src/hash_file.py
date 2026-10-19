@@ -1,26 +1,3 @@
-"""Compute the SHA-256 fingerprint of a model or dataset, ready for ModelRegistry.
-
-Usage:
-    python src/hash_file.py path/to/model.safetensors
-    python src/hash_file.py path/to/model_folder/
-    python src/hash_file.py path/to/model_folder/ --weights-only
-
-For a single file, the result is the ordinary SHA-256 of its bytes, identical to
-what `sha256sum` (Linux) or `shasum -a 256` (macOS) prints.
-
-Many models are folders of several files (config.json, weight shards, ...).
-For a folder we hash every file, write one line "<relative/path> <file hash>" per
-file, sorted by path, and hash that list (the "manifest"). Any change to any file's
-content, a renamed file, or an added or removed file therefore changes the result.
-
---weights-only keeps only weight files (.safetensors, .bin, .gguf, ...). This is the
-fingerprint we register on-chain, because the Hugging Face Hub publishes the SHA-256
-of exactly these files. A model downloaded from the Hub, hashed with --weights-only,
-gives the same value as src/hf_lineage.py computed from the Hub's metadata.
-
-The output is printed with a "0x" prefix because that is how Solidity expects a
-bytes32 value, e.g. registerModel(0x3f2a..., ...).
-"""
 
 import argparse
 import hashlib

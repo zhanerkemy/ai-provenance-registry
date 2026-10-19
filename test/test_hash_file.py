@@ -1,4 +1,3 @@
-"""Tests for src/hash_file.py. Run from the repository root with:  python -m pytest"""
 
 import hashlib
 import sys
