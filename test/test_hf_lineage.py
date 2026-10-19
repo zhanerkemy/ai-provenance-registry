@@ -1,7 +1,4 @@
-"""Tests for src/hf_lineage.py. They use a fake Hub, so no internet is needed.
 
-Run from the repository root:  python -m pytest test/test_hf_lineage.py -v
-"""
 
 import hashlib
 import sys
