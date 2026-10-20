@@ -74,6 +74,28 @@ def _as_list(value) -> list[str]:
         return [value]
     return [str(v) for v in value]
 
+RETRY_STATUS = {429, 500, 502, 503, 504}  # rate limit and temporary server errors
+
+
+def _is_transient(exc: Exception) -> bool:
+    """True for errors that may go away if we wait (network drop, rate limit, busy server).
+    False for permanent ones (404 deleted, 401/403 private or gated) - retrying those is pointless."""
+    status = getattr(getattr(exc, "response", None), "status_code", None)
+    if status is not None:
+        return status in RETRY_STATUS
+    name = type(exc).__name__
+    return isinstance(exc, OSError) or "Connection" in name or "Timeout" in name
+
+
+def _retry(call, tries: int = 4, wait: float = 2.0):
+    """Run call(); on a transient error wait 2, 4, 8 s and try again, then give up."""
+    for attempt in range(tries):
+        try:
+            return call()
+        except Exception as exc:
+            if attempt == tries - 1 or not _is_transient(exc):
+                raise
+            time.sleep(wait * 2**attempt)
 
 class HfHub:
     """Talks to huggingface.co through the official huggingface_hub library."""
@@ -88,11 +110,11 @@ class HfHub:
     def children(self, model_id: str, relation: str) -> list[str]:
         time.sleep(self.pause)
         tag = f"base_model:{relation}:{model_id}"
-        return [m.id for m in self.api.list_models(filter=tag, limit=self.list_limit)]
+        return _retry(lambda: [m.id for m in self.api.list_models(filter=tag, limit=self.list_limit)])
 
     def meta(self, model_id: str) -> ModelMeta:
         time.sleep(self.pause)
-        info = self.api.model_info(model_id, files_metadata=True)
+        info = _retry(lambda: self.api.model_info(model_id, files_metadata=True))
         lfs_files = [(s.rfilename, s.lfs.sha256) for s in (info.siblings or []) if s.lfs]
         card = info.card_data
         return ModelMeta(
