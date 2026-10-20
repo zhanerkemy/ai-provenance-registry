@@ -1,0 +1,18 @@
+{
+  "base_model": "HuggingFaceTB/SmolLM2-360M",
+  "pulled_at_utc": "2026-10-20T11:37:35+00:00",
+  "max_models": 3000,
+  "max_depth": 4,
+  "relations": [
+    "finetune",
+    "adapter",
+    "quantized",
+    "merge"
+  ],
+  "huggingface_hub_version": "0.26.2",
+  "n_models": 1369,
+  "truncated": false,
+  "not_visited": 0,
+  "list_errors": 0,
+  "children_reached_twice": 12
+}
