@@ -1,0 +1,44 @@
+# Runs every test on a clean Ubuntu machine after every push and pull request.
+# This is our evidence for the "runs from a clean clone" line of the marking sheet:
+# if this goes green, the repository builds and its tests pass on a computer that
+# has never seen our laptops. Results: the "Actions" tab on GitHub.
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      FOUNDRY_PROFILE: ci # uses [profile.ci] in foundry.toml: 1000 fuzz runs instead of 256
+
+    steps:
+      - name: Check out the repository with forge-std
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Foundry (forge, anvil)
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: v1.5.1 # pinned, so CI does not change when Foundry releases
+
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11" # the version in the README
+          cache: pip
+
+      - name: Install Python packages
+        run: pip install -r requirements.txt
+
+      - name: Compile contracts
+        run: forge build
+
+      - name: Solidity tests
+        run: forge test -vv
+
+      - name: Python tests (the Anvil tests start their own local chain)
+        run: python -m pytest -v
