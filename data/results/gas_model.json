@@ -1,0 +1,58 @@
+{
+  "model": "gas = intercept + uri_words*b + has_data*c + is_base*d (least squares)",
+  "storage": {
+    "n": 1071,
+    "coefficients": {
+      "intercept": 145291.7,
+      "uri_words": 22841.5,
+      "has_data": 20243.2,
+      "is_base": -3167.2
+    },
+    "r_squared": 0.999933,
+    "max_abs_residual": 253.2
+  },
+  "event": {
+    "n": 1071,
+    "coefficients": {
+      "intercept": 31260.5,
+      "uri_words": 652.5,
+      "has_data": 343.6,
+      "is_base": 16920.1
+    },
+    "r_squared": 0.974343,
+    "max_abs_residual": 251.9
+  },
+  "merkle": {
+    "by_batch_size": {
+      "1": {
+        "batches": 1071,
+        "mean_full_batch_gas": 75638.9,
+        "gas_per_model": 75638.9
+      },
+      "8": {
+        "batches": 134,
+        "mean_full_batch_gas": 75743.1,
+        "gas_per_model": 9467.9
+      },
+      "32": {
+        "batches": 34,
+        "mean_full_batch_gas": 76126.5,
+        "gas_per_model": 2379.0
+      },
+      "128": {
+        "batches": 9,
+        "mean_full_batch_gas": 77734.0,
+        "gas_per_model": 607.3
+      }
+    },
+    "cheaper_than_event_from_k": 3,
+    "note": "smallest k with (single-record batch gas) / k < mean event gas per model"
+  },
+  "evm_reference": {
+    "new_storage_slot": 22100,
+    "expected_has_data_storage": 20284,
+    "expected_is_base_storage": -2800,
+    "expected_is_base_event": 17100,
+    "note": "uri_words should cost about one new slot (22,100) plus 32 bytes of call data (512) plus memory copying"
+  }
+}
