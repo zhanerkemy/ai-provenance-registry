@@ -1,0 +1,31 @@
+{
+  "run_at_utc": "2026-10-27T19:55:16+00:00",
+  "chain_id": 31337,
+  "rpc": "http://127.0.0.1:8545",
+  "block_range": [
+    614,
+    4009
+  ],
+  "solc": "0.8.24+commit.e11b9ed9",
+  "tree_file": "data\\hf_tree.csv",
+  "tree_file_sha256": "aa8e7339a31f30b87f31fd873b9bcb16fcf1dc035c24fb2fbce9d54706fa0112",
+  "designs": [
+    "storage",
+    "event",
+    "merkle"
+  ],
+  "batch_sizes": [
+    1,
+    8,
+    32,
+    128
+  ],
+  "n_models_in_tree": 1369,
+  "n_registered": 1071,
+  "excluded_by_reason": {
+    "no_weight_files": 16,
+    "multi_parent": 34,
+    "duplicate_weights": 25,
+    "ancestor_not_registered": 223
+  }
+}
