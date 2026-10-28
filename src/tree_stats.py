@@ -7,6 +7,10 @@ Usage (from the repository root):
 This answers the "real data" half of our research question before any gas is spent:
 of all the models in a real family tree, how many have weight hashes, declare their
 training data, have a single parent, and can therefore be registered by our contracts?
+
+It also traces every model excluded as "ancestor_not_registered" back to the excluded
+ancestor that blocks it (its "root cause"), so we can say which single models cost us
+the most of the tree.
 """
 
 from __future__ import annotations
@@ -21,6 +25,44 @@ from hf_lineage import Node, plan_registrations, read_tree_csv
 def share(part: int, whole: int) -> float:
     """Fraction rounded to 4 decimals; 0.0 if there is nothing to divide by."""
     return round(part / whole, 4) if whole else 0.0
+
+
+def blocking_ancestor(model_id: str, nodes_by_id: dict[str, Node], excluded: dict[str, str]) -> str:
+    """For a model excluded as "ancestor_not_registered", return the excluded ancestor
+    that blocks it: the nearest ancestor left out for its own reason (several parents,
+    no weight hashes, unreadable), not merely because of its own ancestors.
+
+    Exact re-uploads ("duplicate_weights") never block anyone, because their children
+    attach to the first copy (see plan_registrations), so the walk passes through them.
+    """
+    node = nodes_by_id[model_id]
+    while node.parent_id:
+        parent = nodes_by_id[node.parent_id]
+        reason = excluded.get(parent.model_id)
+        if reason not in (None, "ancestor_not_registered", "duplicate_weights"):
+            return parent.model_id
+        node = parent
+    raise ValueError(f"{model_id} has no excluded ancestor")  # cannot happen for valid input
+
+
+def ancestor_root_causes(nodes: list[Node], excluded: dict[str, str], top: int = 5) -> dict:
+    """How many "ancestor_not_registered" models each root cause (reason and model) blocks."""
+    by_id = {node.model_id: node for node in nodes}
+    blockers = Counter(
+        blocking_ancestor(m, by_id, excluded)
+        for m, reason in excluded.items()
+        if reason == "ancestor_not_registered"
+    )
+    by_reason = Counter()
+    for blocker, count in blockers.items():
+        by_reason[excluded[blocker]] += count
+    return {
+        "by_reason": dict(by_reason.most_common()),
+        "top_blocking_models": [
+            {"model_id": m, "reason": excluded[m], "descendants_blocked": c}
+            for m, c in blockers.most_common(top)
+        ],
+    }
 
 
 def tree_stats(nodes: list[Node]) -> dict:
@@ -41,6 +83,7 @@ def tree_stats(nodes: list[Node]) -> dict:
         "n_registrable": len(plan),
         "share_registrable": share(len(plan), n),
         "excluded_by_reason": dict(Counter(excluded.values()).most_common()),
+        "ancestor_not_registered_root_causes": ancestor_root_causes(nodes, excluded),
     }
 
 
