@@ -30,5 +30,37 @@
     "multi_parent": 34,
     "duplicate_weights": 25,
     "no_weight_files": 16
+  },
+  "ancestor_not_registered_root_causes": {
+    "by_reason": {
+      "multi_parent": 223
+    },
+    "top_blocking_models": [
+      {
+        "model_id": "HuggingFaceTB/SmolVLM-500M-Instruct",
+        "reason": "multi_parent",
+        "descendants_blocked": 215
+      },
+      {
+        "model_id": "Fu01978/SmolMoE-4x360M-Instruct",
+        "reason": "multi_parent",
+        "descendants_blocked": 2
+      },
+      {
+        "model_id": "GoofyLM/BrainrotLM2-Assistant-362M",
+        "reason": "multi_parent",
+        "descendants_blocked": 2
+      },
+      {
+        "model_id": "zeustek/Wayo_GPT",
+        "reason": "multi_parent",
+        "descendants_blocked": 1
+      },
+      {
+        "model_id": "jekunz/smollm360m-da05-is1-nno05-nob05-sv05-ties",
+        "reason": "multi_parent",
+        "descendants_blocked": 1
+      }
+    ]
   }
 }
