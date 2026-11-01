@@ -1,0 +1,22 @@
+check_id,check,design,result,evidence
+1,A tampered weights hash is detected,storage,yes,"verifyWeights: real hash -> True, tampered -> False"
+1,A tampered weights hash is detected,event,off-chain only,tampered hash differs from the log entry read with eth_getLogs; contract read functions: none
+1,A tampered weights hash is detected,merkle,with proof,"verifyRecord: real -> True, tampered -> False, real without its proof -> False"
+2,Registering the same weights twice is refused,storage,yes,second registration by another account: reverted with AlreadyRegistered
+2,Registering the same weights twice is refused,event,no,second registration by another account: accepted
+2,Registering the same weights twice is refused,merkle,no,same record anchored in batches 1 and 2 by two accounts; verifies in both: True
+3,A record whose parent was never registered is refused,storage,yes,child with parentId 99: reverted with ModelDoesNotExist
+3,A record whose parent was never registered is refused,event,yes,child with parentId 99: reverted with ModelDoesNotExist
+3,A record whose parent was never registered is refused,merkle,no,record pointing to an unknown parent anchored; verifies: True
+4,An empty (zero) weights hash is refused,storage,yes,zero weights hash: reverted with ZeroWeightsHash
+4,An empty (zero) weights hash is refused,event,yes,zero weights hash: reverted with ZeroWeightsHash
+4,An empty (zero) weights hash is refused,merkle,no,record with zero weights anchored (its leaf is not zero); verifies: True
+5,Another contract can check a record,storage,yes,"VerifyProbe -> True, 7647 gas"
+5,Another contract can check a record,event,no,read functions: none; contracts cannot read event logs
+5,Another contract can check a record,merkle,with proof,"VerifyProbe with the proof -> True, 9444 gas"
+6,A model's lineage can be followed on-chain,storage,yes,"getLineage(2) -> [2, 1]"
+6,A model's lineage can be followed on-chain,event,off-chain only,"parent links rebuilt from eth_getLogs: [2, 1]; no contract function"
+6,A model's lineage can be followed on-chain,merkle,with proof,"child verifies: True, its parent's record verifies: True, each step needs that record and its proof"
+7,The owner of one model can hand it to another account,storage,yes,owner's transfer accepted: True; stranger's attempt reverted with NotOwner
+7,The owner of one model can hand it to another account,event,no,no transferOwnership function and no stored owner
+7,The owner of one model can hand it to another account,merkle,no,no transfer function; the only owner is the batch submitter (matches the sender)
