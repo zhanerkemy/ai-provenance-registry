@@ -1,18 +1,25 @@
-"""Replay the model tree on a local chain under each registry design and record the gas.
+"""Register every model of the tree on a blockchain with each design and save the gas.
 
-Run from the repo root (start `anvil` and run `forge build` first):
+How to run (from the repo root, with `anvil` running and after `forge build`):
     python src/replay.py
-    python src/replay.py --tree data/hf_tree.csv --batch-sizes 1 8 32 128
 
-Each design gets a fresh contract and the same models in the same order:
-    storage - ModelRegistry, one tx per model, record saved in storage
-    event   - EventRegistry, one tx per model, record only in the event log
-    merkle  - MerkleRegistry, one tx per batch of k models, only the root saved
+Small test run on Sepolia (needs .env with SEPOLIA_RPC_URL and PRIVATE_KEY, and test ETH):
+    python src/replay.py --network sepolia --max-models 24 --batch-sizes 1 8
 
-Writes data/results/gas.csv (one row per model per design) and
-data/results/run_meta.json (chain id, blocks, compiler, input file hash, skipped models).
+Each design starts with a new contract and gets the same models in the same order:
+    storage - one transaction per model, the record is kept in contract storage
+    event   - one transaction per model, the record is only written to the event log
+    merkle  - one transaction per batch of k models, only the batch's root is kept
+
+Results:
+    data/results/gas.csv        gas for every model under every design
+    data/results/run_meta.json  details of the run: chain, blocks, compiler, which tree
+                                file was used, skipped models, and contract addresses
+On Sepolia the same two files go to data/results/sepolia/.
+
+--max-models N takes only the first N models. Parents always come before their
+children in the list, so a model's parent is never cut off.
 """
-
 from __future__ import annotations
 
 import argparse
@@ -21,7 +28,7 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from chain import compiler_version, connect, deploy, send
+from chain import compiler_version, connect, connect_network, default_sender, deploy, send
 from hash_file import hash_file
 from hf_lineage import Node, plan_registrations, read_tree_csv
 from merkle_tree import ZERO32, MerkleTree, leaf_hash, to_bytes32
@@ -30,9 +37,16 @@ GAS_COLUMNS = ["design", "batch_size", "batch_index", "model_id", "depth", "uri_
                "tx_gas", "gas_per_model", "verify_gas"]
 
 
-def replay_per_model(w3, contract_name: str, design: str, plan) -> list[dict]:
+def contract_info(design: str, batch_size: int, registry, receipt) -> dict:
+    """Where a contract was deployed; Stage 4 asks for the address and block range."""
+    return {"design": design, "batch_size": batch_size, "address": registry.address,
+            "deploy_block": receipt["blockNumber"], "deploy_tx": "0x" + receipt["transactionHash"].hex().removeprefix("0x"),
+            "deploy_gas": receipt["gasUsed"]}
+
+
+def replay_per_model(w3, contract_name: str, design: str, plan) -> tuple[list[dict], dict]:
     """Storage and event designs: one registerModel transaction per model."""
-    registry, _ = deploy(w3, contract_name)
+    registry, deploy_receipt = deploy(w3, contract_name)
     onchain_id: dict[str, int] = {}
     rows = []
     for node, parent in plan:
@@ -47,12 +61,12 @@ def replay_per_model(w3, contract_name: str, design: str, plan) -> list[dict]:
         first = plan[0][0]
         rows[0]["verify_gas"] = registry.functions.verifyWeights(
             1, to_bytes32(first.weights_hash)).estimate_gas()
-    return rows
+    return rows, contract_info(design, 1, registry, deploy_receipt)
 
 
-def replay_merkle(w3, plan, batch_size: int) -> list[dict]:
+def replay_merkle(w3, plan, batch_size: int) -> tuple[list[dict], dict]:
     """Merkle design: one anchorBatch transaction per `batch_size` models."""
-    registry, _ = deploy(w3, "MerkleRegistry")
+    registry, deploy_receipt = deploy(w3, "MerkleRegistry")
     weights_of = {node.model_id: node.weights_hash for node, _ in plan}
     rows = []
     for b, start in enumerate(range(0, len(plan), batch_size)):
@@ -74,7 +88,7 @@ def replay_merkle(w3, plan, batch_size: int) -> list[dict]:
         for i, (node, _) in enumerate(chunk):
             rows.append(_row("merkle", batch_size, b, node, receipt["gasUsed"] if i == 0 else 0,
                              per_model, verify_gas if i == 0 else ""))
-    return rows
+    return rows, contract_info("merkle", batch_size, registry, deploy_receipt)
 
 
 def _row(design, batch_size, batch_index, node: Node, tx_gas, gas_per_model, verify_gas=""):
@@ -91,32 +105,73 @@ def _row(design, batch_size, batch_index, node: Node, tx_gas, gas_per_model, ver
     }
 
 
+def check_funds(w3, sample_ids: set[str], args) -> None:
+    """Before spending real (test) ETH: estimate the cost from the Anvil run of the same
+    transactions, and stop if the wallet cannot pay for it with a 50% margin."""
+    anvil_gas = Path("data/results/gas.csv")
+    if not anvil_gas.exists():
+        print("No Anvil results to estimate cost from; run src/replay.py on Anvil first.")
+        return
+    with anvil_gas.open(newline="", encoding="utf-8") as f:
+        rows = [r for r in csv.DictReader(f) if r["model_id"] in sample_ids
+                and r["design"] in args.designs
+                and (r["design"] != "merkle" or int(r["batch_size"]) in args.batch_sizes)]
+    deploys = 700_000 * (len(args.designs) - 1 + len(args.batch_sizes))  # each deploy < 700k gas
+    gas = sum(int(r["tx_gas"]) for r in rows) + deploys
+    price = w3.eth.gas_price
+    balance = w3.eth.get_balance(default_sender(w3))
+    cost = gas * price
+    print(f"About {gas:,} gas at {price / 1e9:.2f} gwei = {cost / 1e18:.4f} ETH; "
+          f"wallet {default_sender(w3)} has {balance / 1e18:.4f} ETH")
+    if balance < 1.5 * cost:
+        raise SystemExit("Not enough test ETH (need 1.5x the estimate). Use a faucet, "
+                         "or lower --max-models.")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Replay a model tree on-chain and record gas.")
     parser.add_argument("--tree", type=Path, default=Path("data/hf_tree.csv"))
-    parser.add_argument("--rpc", default="http://127.0.0.1:8545")
+    parser.add_argument("--network", choices=["anvil", "sepolia"], default="anvil")
+    parser.add_argument("--rpc", help="a different local node (default: Anvil on port 8545)")
+    parser.add_argument("--max-models", type=int, help="register only the first N models")
     parser.add_argument("--designs", nargs="+", default=["storage", "event", "merkle"],
                         choices=["storage", "event", "merkle"])
     parser.add_argument("--batch-sizes", nargs="+", type=int, default=[1, 8, 32, 128])
-    parser.add_argument("--out", type=Path, default=Path("data/results/gas.csv"))
+    parser.add_argument("--out", type=Path, help="default data/results[/sepolia]/gas.csv")
     args = parser.parse_args()
+    if args.out is None:
+        sub = "" if args.network == "anvil" else f"{args.network}/"
+        args.out = Path(f"data/results/{sub}gas.csv")
 
     nodes = read_tree_csv(args.tree)
     plan, excluded = plan_registrations(nodes)
     print(f"{len(nodes)} models in tree, {len(plan)} registrable, {len(excluded)} left out")
+    n_registrable = len(plan)
+    if args.max_models:
+        plan = plan[:args.max_models]  # a prefix: parents always come before children
+        print(f"registering the first {len(plan)} only (--max-models)")
 
-    w3 = connect(args.rpc)
+    w3 = connect(args.rpc) if args.rpc else connect_network(args.network)
+    if args.network != "anvil":
+        check_funds(w3, {node.model_id for node, _ in plan}, args)
     first_block = w3.eth.block_number + 1
     rows: list[dict] = []
+    contracts: list[dict] = []
     if "storage" in args.designs:
-        rows += replay_per_model(w3, "ModelRegistry", "storage", plan)
+        new_rows, info = replay_per_model(w3, "ModelRegistry", "storage", plan)
+        rows += new_rows
+        contracts.append(info)
         print("storage done")
     if "event" in args.designs:
-        rows += replay_per_model(w3, "EventRegistry", "event", plan)
+        new_rows, info = replay_per_model(w3, "EventRegistry", "event", plan)
+        rows += new_rows
+        contracts.append(info)
         print("event done")
     if "merkle" in args.designs:
         for k in args.batch_sizes:
-            rows += replay_merkle(w3, plan, k)
+            new_rows, info = replay_merkle(w3, plan, k)
+            rows += new_rows
+            contracts.append(info)
             print(f"merkle k={k} done")
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
@@ -130,15 +185,21 @@ def main() -> None:
         reasons[reason] = reasons.get(reason, 0) + 1
     meta = {
         "run_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "network": args.network,
         "chain_id": w3.eth.chain_id,
-        "rpc": args.rpc,
+        # The Sepolia URL contains a private API key, so it is never written to a file.
+        "rpc": args.rpc or ("http://127.0.0.1:8545" if args.network == "anvil" else "from .env"),
+        "sender": default_sender(w3),
         "block_range": [first_block, w3.eth.block_number],
+        "contracts": contracts,
         "solc": compiler_version("ModelRegistry"),
         "tree_file": str(args.tree),
         "tree_file_sha256": hash_file(args.tree),
         "designs": args.designs,
         "batch_sizes": args.batch_sizes,
         "n_models_in_tree": len(nodes),
+        "n_registrable": n_registrable,
+        "max_models": args.max_models,
         "n_registered": len(plan),
         "excluded_by_reason": reasons,
     }

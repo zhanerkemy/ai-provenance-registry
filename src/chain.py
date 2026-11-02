@@ -1,33 +1,73 @@
-"""Small helpers for talking to an Ethereum node from Python (web3.py).
+"""Helpers for connecting to a blockchain from Python with web3.py.
 
-This week everything runs on Anvil, Foundry's local blockchain: free, instant, and
-it starts with 10 accounts already holding test ETH. In one terminal run
-    anvil
-and leave it open. Anvil listens on http://127.0.0.1:8545 by default.
+We use two networks:
+    anvil    A local test chain from Foundry. Run `anvil` in a separate terminal and
+             keep it open (it uses http://127.0.0.1:8545). Its 10 accounts already have
+             test ETH and are unlocked, so we do not need a private key.
+    sepolia  A public Ethereum test network. Every transaction has to be signed with
+             our private key and paid for with free Sepolia test ETH. The RPC URL and
+             the key are read from .env (see .env.example). We use a separate wallet
+             only for this project. .env is never committed (.gitignore).
 
-The contracts must be compiled first (`forge build`); this module reads the compiled
-ABI (the list of functions) and bytecode from the out/ folder that forge creates.
-
-Anvil's accounts are "unlocked", so no private key is needed here.
+Before using this module run `forge build`: it reads each contract's ABI and bytecode
+from the out/ folder.
 """
 
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
+from eth_account import Account
 from web3 import Web3
 from web3.contract import Contract
+from web3.middleware import SignAndSendRawMiddlewareBuilder
 
 DEFAULT_RPC = "http://127.0.0.1:8545"
 OUT_DIR = Path(__file__).resolve().parents[1] / "out"
+RECEIPT_TIMEOUT = 300  # seconds; a Sepolia block comes every 12 s, but it can be slow
 
 
-def connect(rpc: str = DEFAULT_RPC) -> Web3:
+def connect(rpc: str = DEFAULT_RPC, private_key: str | None = None) -> Web3:
+    """Connect to a node. With a private key, every transaction is signed locally (the
+    key never leaves this computer) and sent from that key's address."""
     w3 = Web3(Web3.HTTPProvider(rpc))
     if not w3.is_connected():
         raise ConnectionError(f"No Ethereum node at {rpc}. Start one with: anvil")
+    if private_key:
+        account = Account.from_key(private_key)
+        w3.middleware_onion.inject(SignAndSendRawMiddlewareBuilder.build(account), layer=0)
+        w3.eth.default_account = account.address
     return w3
+
+
+def connect_network(network: str) -> Web3:
+    """connect() for "anvil" (no key) or "sepolia" (RPC URL and key from .env)."""
+    if network == "anvil":
+        return connect(DEFAULT_RPC)
+    if network != "sepolia":
+        raise ValueError(f"unknown network {network!r}")
+    try:
+        from dotenv import load_dotenv
+
+        load_dotenv()
+    except ImportError:
+        pass
+    rpc, key = os.getenv("SEPOLIA_RPC_URL"), os.getenv("PRIVATE_KEY")
+    if not rpc or not key:
+        raise RuntimeError("Set SEPOLIA_RPC_URL and PRIVATE_KEY in .env (copy .env.example)")
+    w3 = connect(rpc, key)
+    if w3.eth.chain_id != 11155111:  # Sepolia's chain id
+        raise RuntimeError(f"{rpc} is chain {w3.eth.chain_id}, not Sepolia (11155111)")
+    return w3
+
+
+def default_sender(w3: Web3) -> str:
+    """The signing key's address if connect() was given one, else Anvil's first account."""
+    if isinstance(w3.eth.default_account, str):
+        return w3.eth.default_account
+    return w3.eth.accounts[0]
 
 
 def load_artifact(name: str) -> dict:
@@ -47,8 +87,8 @@ def deploy(w3: Web3, name: str, sender: str | None = None) -> tuple[Contract, di
     """Deploy a fresh copy of a contract. Returns (contract, receipt)."""
     art = load_artifact(name)
     factory = w3.eth.contract(abi=art["abi"], bytecode=art["bytecode"]["object"])
-    tx_hash = factory.constructor().transact({"from": sender or w3.eth.accounts[0]})
-    receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
+    tx_hash = factory.constructor().transact({"from": sender or default_sender(w3)})
+    receipt = w3.eth.wait_for_transaction_receipt(tx_hash, timeout=RECEIPT_TIMEOUT)
     if receipt["status"] != 1:
         raise RuntimeError(f"deploying {name} failed")
     return w3.eth.contract(address=receipt["contractAddress"], abi=art["abi"]), receipt
@@ -59,8 +99,8 @@ def send(w3: Web3, call, sender: str | None = None) -> dict:
 
     Returns the receipt; receipt["gasUsed"] is the gas this transaction really cost.
     """
-    tx_hash = call.transact({"from": sender or w3.eth.accounts[0]})
-    receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
+    tx_hash = call.transact({"from": sender or default_sender(w3)})
+    receipt = w3.eth.wait_for_transaction_receipt(tx_hash, timeout=RECEIPT_TIMEOUT)
     if receipt["status"] != 1:
         raise RuntimeError(f"transaction {tx_hash.hex()} reverted")
     return receipt
