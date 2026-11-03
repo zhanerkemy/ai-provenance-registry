@@ -3,10 +3,12 @@
 Usage (from the repository root):
     python src/make_figures.py
 
-Reads   data/hf_tree.csv, data/results/gas.csv
-Writes  figures/tree_by_depth.png        models at each depth, split by relation
-        figures/tree_registrability.png  how many models can go on-chain, and why not
-        figures/gas_per_model.png        main figure: gas per registered model, by design
+Reads   data/hf_tree.csv and data/results/{gas.csv, verify_gas.csv, gas_model.json}
+Writes  figures/tree_by_depth.png          models at each depth, split by relation
+        figures/tree_registrability.png    how many models can go on-chain, and why not
+        figures/gas_per_model.png          main figure: gas per registered model, by design
+        figures/verify_gas.png             gas for a contract to verify a record / a lineage
+        figures/storage_gas_breakdown.png  storage gas against URI length, with fitted model
 
 A gas figure is skipped (with a message) if its results file does not exist yet.
 """
@@ -15,6 +17,8 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
+import math
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -165,6 +169,101 @@ def plot_gas_per_model(gas_rows: list[dict], out: Path) -> None:
     plt.close(fig)
 
 
+def plot_verify_gas(rows: list[dict], out: Path) -> None:
+    """Two panels with their own y-axes (small multiples, not a dual axis):
+    (a) gas for a contract to check one record; (b) to check a whole lineage."""
+    fig, (ax_a, ax_b) = plt.subplots(1, 2, figsize=(7.2, 3.4), dpi=200,
+                                     gridspec_kw={"width_ratios": [1, 1.25]})
+
+    # (a) one record: mean per design, with the mean proof length under each bar
+    groups: dict[tuple[str, int], list[dict]] = defaultdict(list)
+    for r in rows:
+        groups[(r["design"], int(r["batch_size"]))].append(r)
+    order = [("storage", 1)] + sorted(k for k in groups if k[0] == "merkle")
+    means = [sum(int(r["verify_gas"]) for r in groups[k]) / len(groups[k]) for k in order]
+    proofs = [sum(int(r["proof_len"]) for r in groups[k]) / len(groups[k]) for k in order]
+    x = range(len(order))
+    ax_a.bar(x, means, width=0.6, color=[DESIGN_COLORS[d] for d, _ in order],
+             edgecolor=SURFACE, linewidth=1.5)
+    for xi, m in zip(x, means):
+        ax_a.annotate(f"{m:,.0f}", (xi, m), xytext=(0, 3), textcoords="offset points",
+                      ha="center", fontsize=7, color=TEXT)
+    ticks = ["Storage\n-"] + [f"k = {k}\n{p:.1f}" for (_, k), p in zip(order[1:], proofs[1:])]
+    ax_a.set_xticks(list(x), ticks, fontsize=7, color=TEXT)
+    ax_a.set_xlabel("Merkle batch size k, and mean proof length (hashes)", color=TEXT_MUTED,
+                    fontsize=8)
+    ax_a.set_ylabel("Gas to check one record", color=TEXT_MUTED, fontsize=8)
+    ax_a.set_title("(a) One record", loc="left", fontsize=9, color=TEXT)
+
+    # (b) whole lineage, by number of generations on-chain
+    series = [("storage", 1, "-", "o")] + [("merkle", k, ls, mk) for k, ls, mk
+                                             in ((8, "--", "s"), (128, "-", "^"))
+                                             if ("merkle", k) in groups]
+    for design, k, style, marker in series:
+        by_len: dict[int, list[int]] = defaultdict(list)
+        for r in groups[(design, k)]:
+            by_len[int(r["lineage_len"])].append(int(r["lineage_gas"]))
+        xs = sorted(by_len)
+        ys = [sum(by_len[n]) / len(by_len[n]) for n in xs]
+        ax_b.plot(xs, ys, linestyle=style, marker=marker, markersize=5, linewidth=2,
+                  color=DESIGN_COLORS[design], markeredgecolor=SURFACE)
+        name = "Storage" if design == "storage" else f"Merkle, k = {k}"
+        ax_b.annotate(name, (xs[-1], ys[-1]), xytext=(6, 0), textcoords="offset points",
+                      va="center", fontsize=7, color=TEXT)
+    ax_b.set_xlabel("Generations checked (model, parent, ..., base)", color=TEXT_MUTED,
+                    fontsize=8)
+    ax_b.set_ylabel("Gas to check the whole lineage", color=TEXT_MUTED, fontsize=8)
+    ax_b.set_title("(b) Whole lineage", loc="left", fontsize=9, color=TEXT)
+    longest = max(int(r["lineage_len"]) for r in rows)
+    ax_b.set_xlim(0.7, longest + 1.4)  # room for the line labels on the right
+    ax_b.set_xticks(range(1, longest + 1))
+
+    for ax in (ax_a, ax_b):
+        style_axes(ax)
+        ax.yaxis.grid(True, color=GRID, linewidth=0.8)
+        ax.set_ylim(bottom=0)
+        ax.yaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: f"{v:,.0f}"))
+    fig.tight_layout()
+    fig.savefig(out, facecolor=SURFACE)
+    plt.close(fig)
+
+
+def plot_storage_breakdown(gas_rows: list[dict], has_data: dict[str, bool], model: dict,
+                           out: Path) -> None:
+    """Storage gas of every model against its URI length. Filled dots declared training
+    data, hollow ones did not; the lines are the fitted model from src/gas_model.py."""
+    rows = [r for r in gas_rows if r["design"] == "storage"]
+    coef = model["storage"]["coefficients"]
+
+    fig, ax = plt.subplots(figsize=(6.4, 3.6), dpi=200)
+    color = DESIGN_COLORS["storage"]
+    for declared, face, label in ((True, color, "data hash declared"),
+                                  (False, "none", "no data hash")):
+        pts = [r for r in rows if has_data[r["model_id"]] == declared]
+        ax.scatter([int(r["uri_bytes"]) for r in pts], [float(r["gas_per_model"]) for r in pts],
+                   s=14, facecolors=face, edgecolors=color, linewidths=0.8, alpha=0.6,
+                   label=f"{label} ({len(pts)})", zorder=3)
+        xs = range(min(int(r["uri_bytes"]) for r in pts), max(int(r["uri_bytes"]) for r in pts) + 1)
+        ys = [coef["intercept"] + coef["uri_words"] * math.ceil(x / 32) + coef["has_data"] * declared
+              for x in xs]
+        ax.plot(list(xs), ys, color=TEXT_MUTED, linewidth=1, linestyle="-" if declared else "--",
+                zorder=2)
+
+    ax.annotate(f"+{coef['uri_words']:,.0f} gas per 32-byte word of URI\n"
+                f"+{coef['has_data']:,.0f} gas with a data hash\n"
+                f"fit R\u00b2 = {model['storage']['r_squared']:.4f}",
+                xy=(0.02, 0.97), xycoords="axes fraction", va="top", fontsize=7, color=TEXT)
+    style_axes(ax)
+    ax.yaxis.grid(True, color=GRID, linewidth=0.8)
+    ax.yaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: f"{v:,.0f}"))
+    ax.set_xlabel("URI length (bytes)", color=TEXT_MUTED, fontsize=9)
+    ax.set_ylabel("Storage registration gas", color=TEXT_MUTED, fontsize=9)
+    ax.legend(frameon=False, fontsize=7, loc="lower right", labelcolor=TEXT)
+    fig.tight_layout()
+    fig.savefig(out, facecolor=SURFACE)
+    plt.close(fig)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate the paper's figures.")
     parser.add_argument("--tree", type=Path, default=Path("data/hf_tree.csv"))
@@ -182,6 +281,21 @@ def main() -> None:
         plot_gas_per_model(read_csv(gas_csv), args.out_dir / "gas_per_model.png")
     else:
         print(f"skipped gas_per_model.png: {gas_csv} not found (run src/replay.py)")
+
+    verify_csv = args.results / "verify_gas.csv"
+    if verify_csv.exists():
+        plot_verify_gas(read_csv(verify_csv), args.out_dir / "verify_gas.png")
+    else:
+        print(f"skipped verify_gas.png: {verify_csv} not found (run src/verify_gas.py)")
+
+    model_json = args.results / "gas_model.json"
+    if gas_csv.exists() and model_json.exists():
+        has_data = {n.model_id: bool(n.data_ref_hash) for n in nodes}
+        plot_storage_breakdown(read_csv(gas_csv), has_data,
+                               json.loads(model_json.read_text(encoding="utf-8")),
+                               args.out_dir / "storage_gas_breakdown.png")
+    else:
+        print("skipped storage_gas_breakdown.png: run src/replay.py and src/gas_model.py")
     print(f"Figures written to {args.out_dir}/")
 
 
