@@ -1,0 +1,14 @@
+\begin{tabular}{lrrrrr}
+\toprule
+ & \multicolumn{2}{c}{Registration, gas per model} & Deployment & \multicolumn{2}{c}{Check by a contract, gas} \\
+\cmidrule(lr){2-3}\cmidrule(lr){5-6}
+Design & Mean & Range & gas & One record & 5 generations \\
+\midrule
+Storage & 219{,}771 & 190{,}874--259{,}650 & -- & 7{,}647 & 20{,}121 \\
+Event-only & 33{,}360 & 32{,}468--50{,}138 & -- & not possible & not possible \\
+Merkle, $k=1$ & 75{,}639 & 75{,}589--92{,}701 & -- & 9{,}122 & 45{,}605 \\
+Merkle, $k=8$ & 9{,}477 & 9{,}449--11{,}588 & -- & 10{,}107 & 50{,}510 \\
+Merkle, $k=32$ & 2{,}416 & 2{,}362--5{,}041 & -- & 10{,}685 & 53{,}472 \\
+Merkle, $k=128$ & 651 & 590--1{,}608 & -- & 11{,}262 & 56{,}328 \\
+\bottomrule
+\end{tabular}

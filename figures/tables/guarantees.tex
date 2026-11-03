@@ -1,0 +1,14 @@
+\setlength{\tabcolsep}{4pt}% tighter columns: fits one IEEE column at \footnotesize
+\begin{tabular}{lccc}
+\toprule
+Audit check & Storage & Event-only & Merkle \\
+\midrule
+Detects tampered weights & yes & off-chain & with proof \\
+Refuses duplicate weights & yes & no & no \\
+Refuses unknown parent & yes & yes & no \\
+Refuses zero weights hash & yes & yes & no \\
+Checkable by a contract & yes & no & with proof \\
+Lineage readable on-chain & yes & off-chain & with proof \\
+Per-model ownership transfer & yes & no & no \\
+\bottomrule
+\end{tabular}
