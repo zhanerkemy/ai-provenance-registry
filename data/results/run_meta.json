@@ -1,10 +1,62 @@
 {
-  "run_at_utc": "2026-10-27T19:55:16+00:00",
+  "run_at_utc": "2026-11-05T17:19:17+00:00",
+  "network": "anvil",
   "chain_id": 31337,
   "rpc": "http://127.0.0.1:8545",
+  "sender": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
   "block_range": [
-    614,
-    4009
+    1,
+    3396
+  ],
+  "contracts": [
+    {
+      "design": "storage",
+      "batch_size": 1,
+      "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deploy_block": 1,
+      "deploy_tx": "0xa7e23fac84b7c4bc792c3fa149bf21e828fdfa0a19d3cf315d46c53961fc248d",
+      "deploy_gas": 645733
+    },
+    {
+      "design": "event",
+      "batch_size": 1,
+      "address": "0xd6A0A8E18934Bb04eb1787De1C7bD48013579935",
+      "deploy_block": 1073,
+      "deploy_tx": "0xeea737b178dbc49bde2f571dfa24fce428df67f81b954cd6a0c897240dcd8e55",
+      "deploy_gas": 174223
+    },
+    {
+      "design": "merkle",
+      "batch_size": 1,
+      "address": "0xAa2Dde363aAd835C88D28069769002e182c2611b",
+      "deploy_block": 2145,
+      "deploy_tx": "0x1131a5852a5c110c2d8d4d4754c7e91b80c7369619dcd7cc6a6c4ac6be84f637",
+      "deploy_gas": 435821
+    },
+    {
+      "design": "merkle",
+      "batch_size": 8,
+      "address": "0xd26ffB5e404F5Dc3bF07d9c214957b2731E8EB9b",
+      "deploy_block": 3217,
+      "deploy_tx": "0x8735077d562aad59763c5eb89f6e7451930c8e93c339f987647e8af03b723a6f",
+      "deploy_gas": 435821
+    },
+    {
+      "design": "merkle",
+      "batch_size": 32,
+      "address": "0x41c0b53284AA5284eAf039005dAa7cE1Bb7f7053",
+      "deploy_block": 3352,
+      "deploy_tx": "0x980b9e501b01a85dfca1d80cab875222a1838fa1ab62d16cd9be3c1e6705fc6c",
+      "deploy_gas": 435821
+    },
+    {
+      "design": "merkle",
+      "batch_size": 128,
+      "address": "0xaC4e090741637Bb80eF03C084E2b16fDD54c7ec3",
+      "deploy_block": 3387,
+      "deploy_tx": "0x6ca002ae603fd993f6fdf2af3c76f6c38f557d07fe53dd673216952576c955a8",
+      "deploy_gas": 435821
+    }
   ],
   "solc": "0.8.24+commit.e11b9ed9",
   "tree_file": "data\\hf_tree.csv",
@@ -21,6 +73,8 @@
     128
   ],
   "n_models_in_tree": 1369,
+  "n_registrable": 1071,
+  "max_models": null,
   "n_registered": 1071,
   "excluded_by_reason": {
     "no_weight_files": 16,

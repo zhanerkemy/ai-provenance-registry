@@ -1,0 +1,644 @@
+{
+  "anvil_run_at_utc": "2026-11-05T17:19:17+00:00",
+  "sepolia_run_at_utc": "2026-11-05T17:39:01+00:00",
+  "sepolia_block_range": [
+    12070921,
+    12071015
+  ],
+  "same_tree_file": true,
+  "same_compiler": true,
+  "transactions_compared": 75,
+  "transactions_identical": 0,
+  "differences": [
+    {
+      "design": "storage",
+      "batch_size": 1,
+      "model_id": "HuggingFaceTB/SmolLM2-360M",
+      "anvil_gas": 210649,
+      "sepolia_gas": 908209,
+      "difference": 697560
+    },
+    {
+      "design": "storage",
+      "batch_size": 1,
+      "model_id": "2nji/sft_numina-cot_SmolLM2-360M",
+      "anvil_gas": 213719,
+      "sepolia_gas": 918479,
+      "difference": 704760
+    },
+    {
+      "design": "storage",
+      "batch_size": 1,
+      "model_id": "AZH04/SmolLM2-360M-base-gsm8k-boxed-sft",
+      "anvil_gas": 213803,
+      "sepolia_gas": 918563,
+      "difference": 704760
+    },
+    {
+      "design": "storage",
+      "batch_size": 1,
+      "model_id": "AZH04/SmolLM2-360M-base-gsm8k-boxed-sft-ep12",
+      "anvil_gas": 213863,
+      "sepolia_gas": 918623,
+      "difference": 704760
+    },
+    {
+      "design": "storage",
+      "batch_size": 1,
+      "model_id": "AZH04/SmolLM2-360M-base-gsm8k-boxed-sft-ep16",
+      "anvil_gas": 213851,
+      "sepolia_gas": 918611,
+      "difference": 704760
+    },
+    {
+      "design": "storage",
+      "batch_size": 1,
+      "model_id": "AZH04/SmolLM2-360M-base-gsm8k-boxed-sft-ep24",
+      "anvil_gas": 213863,
+      "sepolia_gas": 918623,
+      "difference": 704760
+    },
+    {
+      "design": "storage",
+      "batch_size": 1,
+      "model_id": "AZH04/SmolLM2-360M-base-gsm8k-boxed-sft-ep32",
+      "anvil_gas": 213863,
+      "sepolia_gas": 918623,
+      "difference": 704760
+    },
+    {
+      "design": "storage",
+      "batch_size": 1,
+      "model_id": "AZH04/SmolLM2-360M-base-gsm8k-boxed-sft-ep49",
+      "anvil_gas": 213863,
+      "sepolia_gas": 918623,
+      "difference": 704760
+    },
+    {
+      "design": "storage",
+      "batch_size": 1,
+      "model_id": "AZH04/SmolLM2-360M-base-gsm8k-boxed-sft-ep9",
+      "anvil_gas": 213851,
+      "sepolia_gas": 918611,
+      "difference": 704760
+    },
+    {
+      "design": "storage",
+      "batch_size": 1,
+      "model_id": "Aravindan/smol-lm2-360-instruct",
+      "anvil_gas": 233991,
+      "sepolia_gas": 1026771,
+      "difference": 792780
+    },
+    {
+      "design": "storage",
+      "batch_size": 1,
+      "model_id": "CommandCode/agr-flash",
+      "anvil_gas": 213587,
+      "sepolia_gas": 918347,
+      "difference": 704760
+    },
+    {
+      "design": "storage",
+      "batch_size": 1,
+      "model_id": "GheeButter/smollm2-360m-dolly-sft",
+      "anvil_gas": 213719,
+      "sepolia_gas": 918479,
+      "difference": 704760
+    },
+    {
+      "design": "storage",
+      "batch_size": 1,
+      "model_id": "HaroonBhat/SmolLM2-360M-Rickified",
+      "anvil_gas": 234015,
+      "sepolia_gas": 1026795,
+      "difference": 792780
+    },
+    {
+      "design": "storage",
+      "batch_size": 1,
+      "model_id": "Mario263/SmolLM2-360M-Rickified",
+      "anvil_gas": 233991,
+      "sepolia_gas": 1026771,
+      "difference": 792780
+    },
+    {
+      "design": "storage",
+      "batch_size": 1,
+      "model_id": "Masorian06/SmolLM2-360M-Rickified",
+      "anvil_gas": 234015,
+      "sepolia_gas": 1026795,
+      "difference": 792780
+    },
+    {
+      "design": "storage",
+      "batch_size": 1,
+      "model_id": "Michaelj1/finetune-smolLM2-360M",
+      "anvil_gas": 213707,
+      "sepolia_gas": 918467,
+      "difference": 704760
+    },
+    {
+      "design": "storage",
+      "batch_size": 1,
+      "model_id": "Nadiveedishravanreddy/SmolLM2-360M",
+      "anvil_gas": 213743,
+      "sepolia_gas": 918503,
+      "difference": 704760
+    },
+    {
+      "design": "storage",
+      "batch_size": 1,
+      "model_id": "NijuNix/SmolLM2-360M-Rickified",
+      "anvil_gas": 233979,
+      "sepolia_gas": 1026759,
+      "difference": 792780
+    },
+    {
+      "design": "storage",
+      "batch_size": 1,
+      "model_id": "Nishef/SmolLM2-360M-Full_DPO_20251225_043457",
+      "anvil_gas": 234147,
+      "sepolia_gas": 1026927,
+      "difference": 792780
+    },
+    {
+      "design": "storage",
+      "batch_size": 1,
+      "model_id": "Nishef/SmolLM2-360M-Full_DPO_20251225_043457-merged",
+      "anvil_gas": 256813,
+      "sepolia_gas": 1137513,
+      "difference": 880700
+    },
+    {
+      "design": "storage",
+      "batch_size": 1,
+      "model_id": "Nishef/SmolLM2-360M-Full_ENHANCED_KTO_20251225_074953",
+      "anvil_gas": 256825,
+      "sepolia_gas": 1137525,
+      "difference": 880700
+    },
+    {
+      "design": "storage",
+      "batch_size": 1,
+      "model_id": "Nishef/SmolLM2-360M-Full_ENHANCED_KTO_20251225_074953-merged",
+      "anvil_gas": 256921,
+      "sepolia_gas": 1137621,
+      "difference": 880700
+    },
+    {
+      "design": "storage",
+      "batch_size": 1,
+      "model_id": "Nishef/SmolLM2-360M-Full_KNOWLEDGE_RETAINING_ENHANCED_KTO_20251227_151509-merged",
+      "anvil_gas": 257149,
+      "sepolia_gas": 1137849,
+      "difference": 880700
+    },
+    {
+      "design": "storage",
+      "batch_size": 1,
+      "model_id": "Nishef/SmolLM2-360M-Full_KTO_20251225_020028",
+      "anvil_gas": 234147,
+      "sepolia_gas": 1026927,
+      "difference": 792780
+    },
+    {
+      "design": "event",
+      "batch_size": 1,
+      "model_id": "HuggingFaceTB/SmolLM2-360M",
+      "anvil_gas": 50138,
+      "sepolia_gas": 132158,
+      "difference": 82020
+    },
+    {
+      "design": "event",
+      "batch_size": 1,
+      "model_id": "2nji/sft_numina-cot_SmolLM2-360M",
+      "anvil_gas": 33122,
+      "sepolia_gas": 34322,
+      "difference": 1200
+    },
+    {
+      "design": "event",
+      "batch_size": 1,
+      "model_id": "AZH04/SmolLM2-360M-base-gsm8k-boxed-sft",
+      "anvil_gas": 33206,
+      "sepolia_gas": 34406,
+      "difference": 1200
+    },
+    {
+      "design": "event",
+      "batch_size": 1,
+      "model_id": "AZH04/SmolLM2-360M-base-gsm8k-boxed-sft-ep12",
+      "anvil_gas": 33266,
+      "sepolia_gas": 34466,
+      "difference": 1200
+    },
+    {
+      "design": "event",
+      "batch_size": 1,
+      "model_id": "AZH04/SmolLM2-360M-base-gsm8k-boxed-sft-ep16",
+      "anvil_gas": 33254,
+      "sepolia_gas": 34454,
+      "difference": 1200
+    },
+    {
+      "design": "event",
+      "batch_size": 1,
+      "model_id": "AZH04/SmolLM2-360M-base-gsm8k-boxed-sft-ep24",
+      "anvil_gas": 33266,
+      "sepolia_gas": 34466,
+      "difference": 1200
+    },
+    {
+      "design": "event",
+      "batch_size": 1,
+      "model_id": "AZH04/SmolLM2-360M-base-gsm8k-boxed-sft-ep32",
+      "anvil_gas": 33266,
+      "sepolia_gas": 34466,
+      "difference": 1200
+    },
+    {
+      "design": "event",
+      "batch_size": 1,
+      "model_id": "AZH04/SmolLM2-360M-base-gsm8k-boxed-sft-ep49",
+      "anvil_gas": 33266,
+      "sepolia_gas": 34466,
+      "difference": 1200
+    },
+    {
+      "design": "event",
+      "batch_size": 1,
+      "model_id": "AZH04/SmolLM2-360M-base-gsm8k-boxed-sft-ep9",
+      "anvil_gas": 33254,
+      "sepolia_gas": 34454,
+      "difference": 1200
+    },
+    {
+      "design": "event",
+      "batch_size": 1,
+      "model_id": "Aravindan/smol-lm2-360-instruct",
+      "anvil_gas": 33494,
+      "sepolia_gas": 34694,
+      "difference": 1200
+    },
+    {
+      "design": "event",
+      "batch_size": 1,
+      "model_id": "CommandCode/agr-flash",
+      "anvil_gas": 32990,
+      "sepolia_gas": 34190,
+      "difference": 1200
+    },
+    {
+      "design": "event",
+      "batch_size": 1,
+      "model_id": "GheeButter/smollm2-360m-dolly-sft",
+      "anvil_gas": 33122,
+      "sepolia_gas": 34322,
+      "difference": 1200
+    },
+    {
+      "design": "event",
+      "batch_size": 1,
+      "model_id": "HaroonBhat/SmolLM2-360M-Rickified",
+      "anvil_gas": 33518,
+      "sepolia_gas": 34718,
+      "difference": 1200
+    },
+    {
+      "design": "event",
+      "batch_size": 1,
+      "model_id": "Mario263/SmolLM2-360M-Rickified",
+      "anvil_gas": 33494,
+      "sepolia_gas": 34694,
+      "difference": 1200
+    },
+    {
+      "design": "event",
+      "batch_size": 1,
+      "model_id": "Masorian06/SmolLM2-360M-Rickified",
+      "anvil_gas": 33518,
+      "sepolia_gas": 34718,
+      "difference": 1200
+    },
+    {
+      "design": "event",
+      "batch_size": 1,
+      "model_id": "Michaelj1/finetune-smolLM2-360M",
+      "anvil_gas": 33110,
+      "sepolia_gas": 34310,
+      "difference": 1200
+    },
+    {
+      "design": "event",
+      "batch_size": 1,
+      "model_id": "Nadiveedishravanreddy/SmolLM2-360M",
+      "anvil_gas": 33146,
+      "sepolia_gas": 34346,
+      "difference": 1200
+    },
+    {
+      "design": "event",
+      "batch_size": 1,
+      "model_id": "NijuNix/SmolLM2-360M-Rickified",
+      "anvil_gas": 33482,
+      "sepolia_gas": 34682,
+      "difference": 1200
+    },
+    {
+      "design": "event",
+      "batch_size": 1,
+      "model_id": "Nishef/SmolLM2-360M-Full_DPO_20251225_043457",
+      "anvil_gas": 33650,
+      "sepolia_gas": 34850,
+      "difference": 1200
+    },
+    {
+      "design": "event",
+      "batch_size": 1,
+      "model_id": "Nishef/SmolLM2-360M-Full_DPO_20251225_043457-merged",
+      "anvil_gas": 34124,
+      "sepolia_gas": 35324,
+      "difference": 1200
+    },
+    {
+      "design": "event",
+      "batch_size": 1,
+      "model_id": "Nishef/SmolLM2-360M-Full_ENHANCED_KTO_20251225_074953",
+      "anvil_gas": 34136,
+      "sepolia_gas": 35336,
+      "difference": 1200
+    },
+    {
+      "design": "event",
+      "batch_size": 1,
+      "model_id": "Nishef/SmolLM2-360M-Full_ENHANCED_KTO_20251225_074953-merged",
+      "anvil_gas": 34232,
+      "sepolia_gas": 35432,
+      "difference": 1200
+    },
+    {
+      "design": "event",
+      "batch_size": 1,
+      "model_id": "Nishef/SmolLM2-360M-Full_KNOWLEDGE_RETAINING_ENHANCED_KTO_20251227_151509-merged",
+      "anvil_gas": 34460,
+      "sepolia_gas": 35660,
+      "difference": 1200
+    },
+    {
+      "design": "event",
+      "batch_size": 1,
+      "model_id": "Nishef/SmolLM2-360M-Full_KTO_20251225_020028",
+      "anvil_gas": 33650,
+      "sepolia_gas": 34850,
+      "difference": 1200
+    },
+    {
+      "design": "merkle",
+      "batch_size": 1,
+      "model_id": "HuggingFaceTB/SmolLM2-360M",
+      "anvil_gas": 92701,
+      "sepolia_gas": 350661,
+      "difference": 257960
+    },
+    {
+      "design": "merkle",
+      "batch_size": 1,
+      "model_id": "2nji/sft_numina-cot_SmolLM2-360M",
+      "anvil_gas": 75601,
+      "sepolia_gas": 252741,
+      "difference": 177140
+    },
+    {
+      "design": "merkle",
+      "batch_size": 1,
+      "model_id": "AZH04/SmolLM2-360M-base-gsm8k-boxed-sft",
+      "anvil_gas": 75589,
+      "sepolia_gas": 252729,
+      "difference": 177140
+    },
+    {
+      "design": "merkle",
+      "batch_size": 1,
+      "model_id": "AZH04/SmolLM2-360M-base-gsm8k-boxed-sft-ep12",
+      "anvil_gas": 75601,
+      "sepolia_gas": 252741,
+      "difference": 177140
+    },
+    {
+      "design": "merkle",
+      "batch_size": 1,
+      "model_id": "AZH04/SmolLM2-360M-base-gsm8k-boxed-sft-ep16",
+      "anvil_gas": 75601,
+      "sepolia_gas": 252741,
+      "difference": 177140
+    },
+    {
+      "design": "merkle",
+      "batch_size": 1,
+      "model_id": "AZH04/SmolLM2-360M-base-gsm8k-boxed-sft-ep24",
+      "anvil_gas": 75601,
+      "sepolia_gas": 252741,
+      "difference": 177140
+    },
+    {
+      "design": "merkle",
+      "batch_size": 1,
+      "model_id": "AZH04/SmolLM2-360M-base-gsm8k-boxed-sft-ep32",
+      "anvil_gas": 75601,
+      "sepolia_gas": 252741,
+      "difference": 177140
+    },
+    {
+      "design": "merkle",
+      "batch_size": 1,
+      "model_id": "AZH04/SmolLM2-360M-base-gsm8k-boxed-sft-ep49",
+      "anvil_gas": 75589,
+      "sepolia_gas": 252729,
+      "difference": 177140
+    },
+    {
+      "design": "merkle",
+      "batch_size": 1,
+      "model_id": "AZH04/SmolLM2-360M-base-gsm8k-boxed-sft-ep9",
+      "anvil_gas": 75601,
+      "sepolia_gas": 252741,
+      "difference": 177140
+    },
+    {
+      "design": "merkle",
+      "batch_size": 1,
+      "model_id": "Aravindan/smol-lm2-360-instruct",
+      "anvil_gas": 75613,
+      "sepolia_gas": 252753,
+      "difference": 177140
+    },
+    {
+      "design": "merkle",
+      "batch_size": 1,
+      "model_id": "CommandCode/agr-flash",
+      "anvil_gas": 75613,
+      "sepolia_gas": 252753,
+      "difference": 177140
+    },
+    {
+      "design": "merkle",
+      "batch_size": 1,
+      "model_id": "GheeButter/smollm2-360m-dolly-sft",
+      "anvil_gas": 75601,
+      "sepolia_gas": 252741,
+      "difference": 177140
+    },
+    {
+      "design": "merkle",
+      "batch_size": 1,
+      "model_id": "HaroonBhat/SmolLM2-360M-Rickified",
+      "anvil_gas": 75613,
+      "sepolia_gas": 252753,
+      "difference": 177140
+    },
+    {
+      "design": "merkle",
+      "batch_size": 1,
+      "model_id": "Mario263/SmolLM2-360M-Rickified",
+      "anvil_gas": 75613,
+      "sepolia_gas": 252753,
+      "difference": 177140
+    },
+    {
+      "design": "merkle",
+      "batch_size": 1,
+      "model_id": "Masorian06/SmolLM2-360M-Rickified",
+      "anvil_gas": 75613,
+      "sepolia_gas": 252753,
+      "difference": 177140
+    },
+    {
+      "design": "merkle",
+      "batch_size": 1,
+      "model_id": "Michaelj1/finetune-smolLM2-360M",
+      "anvil_gas": 75613,
+      "sepolia_gas": 252753,
+      "difference": 177140
+    },
+    {
+      "design": "merkle",
+      "batch_size": 1,
+      "model_id": "Nadiveedishravanreddy/SmolLM2-360M",
+      "anvil_gas": 75613,
+      "sepolia_gas": 252753,
+      "difference": 177140
+    },
+    {
+      "design": "merkle",
+      "batch_size": 1,
+      "model_id": "NijuNix/SmolLM2-360M-Rickified",
+      "anvil_gas": 75613,
+      "sepolia_gas": 252753,
+      "difference": 177140
+    },
+    {
+      "design": "merkle",
+      "batch_size": 1,
+      "model_id": "Nishef/SmolLM2-360M-Full_DPO_20251225_043457",
+      "anvil_gas": 75613,
+      "sepolia_gas": 252753,
+      "difference": 177140
+    },
+    {
+      "design": "merkle",
+      "batch_size": 1,
+      "model_id": "Nishef/SmolLM2-360M-Full_DPO_20251225_043457-merged",
+      "anvil_gas": 75613,
+      "sepolia_gas": 252753,
+      "difference": 177140
+    },
+    {
+      "design": "merkle",
+      "batch_size": 1,
+      "model_id": "Nishef/SmolLM2-360M-Full_ENHANCED_KTO_20251225_074953",
+      "anvil_gas": 75613,
+      "sepolia_gas": 252753,
+      "difference": 177140
+    },
+    {
+      "design": "merkle",
+      "batch_size": 1,
+      "model_id": "Nishef/SmolLM2-360M-Full_ENHANCED_KTO_20251225_074953-merged",
+      "anvil_gas": 75613,
+      "sepolia_gas": 252753,
+      "difference": 177140
+    },
+    {
+      "design": "merkle",
+      "batch_size": 1,
+      "model_id": "Nishef/SmolLM2-360M-Full_KNOWLEDGE_RETAINING_ENHANCED_KTO_20251227_151509-merged",
+      "anvil_gas": 75613,
+      "sepolia_gas": 252753,
+      "difference": 177140
+    },
+    {
+      "design": "merkle",
+      "batch_size": 1,
+      "model_id": "Nishef/SmolLM2-360M-Full_KTO_20251225_020028",
+      "anvil_gas": 75613,
+      "sepolia_gas": 252753,
+      "difference": 177140
+    },
+    {
+      "design": "merkle",
+      "batch_size": 8,
+      "model_id": "HuggingFaceTB/SmolLM2-360M",
+      "anvil_gas": 92701,
+      "sepolia_gas": 350661,
+      "difference": 257960
+    },
+    {
+      "design": "merkle",
+      "batch_size": 8,
+      "model_id": "AZH04/SmolLM2-360M-base-gsm8k-boxed-sft-ep9",
+      "anvil_gas": 75589,
+      "sepolia_gas": 252729,
+      "difference": 177140
+    },
+    {
+      "design": "merkle",
+      "batch_size": 8,
+      "model_id": "Nadiveedishravanreddy/SmolLM2-360M",
+      "anvil_gas": 75601,
+      "sepolia_gas": 252741,
+      "difference": 177140
+    }
+  ],
+  "deployments": [
+    {
+      "design": "storage",
+      "batch_size": 1,
+      "anvil_gas": 645733,
+      "sepolia_gas": 4445049,
+      "identical": false
+    },
+    {
+      "design": "event",
+      "batch_size": 1,
+      "anvil_gas": 174223,
+      "sepolia_gas": 1072401,
+      "identical": false
+    },
+    {
+      "design": "merkle",
+      "batch_size": 1,
+      "anvil_gas": 435821,
+      "sepolia_gas": 2943527,
+      "identical": false
+    },
+    {
+      "design": "merkle",
+      "batch_size": 8,
+      "anvil_gas": 435821,
+      "sepolia_gas": 2943527,
+      "identical": false
+    }
+  ]
+}

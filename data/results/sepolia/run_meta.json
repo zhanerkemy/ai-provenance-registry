@@ -1,0 +1,67 @@
+{
+  "run_at_utc": "2026-11-05T17:39:01+00:00",
+  "network": "sepolia",
+  "chain_id": 11155111,
+  "rpc": "from .env",
+  "sender": "0x00E6c20a5c6789eD4e414f90E0BFcB1861C2baC6",
+  "block_range": [
+    12070921,
+    12071015
+  ],
+  "contracts": [
+    {
+      "design": "storage",
+      "batch_size": 1,
+      "address": "0xAE238a413D1C23287F90f980B5C42ecC4Ea9cd26",
+      "deploy_block": 12070922,
+      "deploy_tx": "0xfb80f145e327053d5f7bccd392c9ef07b7fce10c7260368769c2fd542807dce3",
+      "deploy_gas": 4445049
+    },
+    {
+      "design": "event",
+      "batch_size": 1,
+      "address": "0xD5416fC3cccC8a6D264b9A67dF9385Fa377996B4",
+      "deploy_block": 12070951,
+      "deploy_tx": "0x3a454be2f717700d3c8fee7ac3a6ded02acdb8017065d84f238a4527458c0d31",
+      "deploy_gas": 1072401
+    },
+    {
+      "design": "merkle",
+      "batch_size": 1,
+      "address": "0xdabF8b94d7c42E5a6353263764AB658382c012aa",
+      "deploy_block": 12070983,
+      "deploy_tx": "0xa1c715b79f8a2fa5f4e4eb667394028b5a01224e50a6519a8c628b88ac27b583",
+      "deploy_gas": 2943527
+    },
+    {
+      "design": "merkle",
+      "batch_size": 8,
+      "address": "0x1812ced45F9a25C39EBcE1d4cc21b7a214DBC760",
+      "deploy_block": 12071012,
+      "deploy_tx": "0xa5d3baddf11808ee1ec0b87eb6308429aed916c71b916f23c1249d127e511295",
+      "deploy_gas": 2943527
+    }
+  ],
+  "solc": "0.8.24+commit.e11b9ed9",
+  "tree_file": "data\\hf_tree.csv",
+  "tree_file_sha256": "aa8e7339a31f30b87f31fd873b9bcb16fcf1dc035c24fb2fbce9d54706fa0112",
+  "designs": [
+    "storage",
+    "event",
+    "merkle"
+  ],
+  "batch_sizes": [
+    1,
+    8
+  ],
+  "n_models_in_tree": 1369,
+  "n_registrable": 1071,
+  "max_models": 24,
+  "n_registered": 24,
+  "excluded_by_reason": {
+    "no_weight_files": 16,
+    "multi_parent": 34,
+    "duplicate_weights": 25,
+    "ancestor_not_registered": 223
+  }
+}
