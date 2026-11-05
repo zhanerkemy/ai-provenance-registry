@@ -1,22 +1,14 @@
-"""Run the audit checks of the measurement plan against every design, and record what
-the chain actually does. Answers sub-question 4: which guarantees does each design keep?
+"""Which guarantees does each design keep? Run 7 checks on fresh contracts and record
+what the chain really does (anvil running, `forge build` done):
 
-Usage (from the repository root, with `anvil` running and `forge build` done):
-    python src/audit_checks.py
+    python src/audit_checks.py          # writes data/results/guarantees.csv
 
-Output:
-    data/results/guarantees.csv  one row per check per design
+    yes             the contract does it by itself
+    with proof      works only with the record and its Merkle proof
+    off-chain only  can be read from event logs, but no contract can do it
+    no              the bad input is accepted, or the feature does not exist
 
-Each check deploys fresh contracts, uses real records from data/hf_tree.csv (the base
-model and its first registrable child), tries the thing, and writes down the outcome:
-
-    yes             the contract enforces or supports it by itself
-    with proof      works only if the auditor also has the record and its Merkle proof
-    off-chain only  possible by reading event logs from a node, but no contract can do it
-    no              the chain accepts the bad input, or the operation does not exist
-
-Nothing in the result column is typed by hand: every value comes from a transaction
-or a call made in this run. test/test_audit_checks.py checks the expected table.
+No result is typed by hand; test/test_audit_checks.py checks the expected table.
 """
 
 from __future__ import annotations
@@ -307,7 +299,7 @@ def main() -> None:
     rows = run_all(connect(args.rpc), Records(args.tree))
     args.out.parent.mkdir(parents=True, exist_ok=True)
     with args.out.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=COLUMNS)
+        writer = csv.DictWriter(f, fieldnames=COLUMNS, lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
 

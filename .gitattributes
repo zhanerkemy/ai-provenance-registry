@@ -1,0 +1,8 @@
+# Results must regenerate byte for byte on Windows, macOS and Linux. The scripts write
+# \n line endings; this stops git on Windows from converting them to \r\n and back.
+* text=auto eol=lf
+*.png binary
+
+# Input data whose SHA-256 is recorded in run_meta.json and checked by test_results.py:
+# keep its bytes exactly as downloaded, never convert its line endings.
+data/hf_tree.csv -text

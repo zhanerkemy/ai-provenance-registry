@@ -1,28 +1,12 @@
-"""Measure what it costs ANOTHER CONTRACT to verify a model record, and a whole lineage,
-under the storage and Merkle designs. Answers sub-question 3 of the measurement plan.
+"""Gas for another contract to verify one record, and a whole lineage (storage, Merkle).
 
-Usage (from the repository root, with `anvil` running and `forge build` done):
-    python src/verify_gas.py
-    python src/verify_gas.py --per-depth 5 --seed 435 --batch-sizes 1 8 32 128
+    python src/verify_gas.py            # anvil running; writes data/results/verify_gas.csv
 
-Output:
-    data/results/verify_gas.csv  one row per sampled model per design (and batch size)
-
-How it works
-------------
-Verification gas does not depend on how many models are registered; it depends on the
-model's depth (how many generations to read) and, for Merkle, on the batch size (how
-long the proof is). So we do not need to register all 1,071 models again. We take a
-random sample (fixed seed) of up to --per-depth models at every depth, add their
-ancestors, and register only those, in the same order as src/replay.py.
-
-Each check is sent through src/VerifyProbe.sol as an eth_call. That gives the gas of the
-check itself, without the 21,000 base cost and call data cost that estimate_gas adds
-(see docs/measurement_plan.md, "Why two verification numbers"). Every eth_call starts
-cold, so each number is the cost of the first check in a transaction.
-
-The event-only design does not appear: a contract cannot read event logs, so on-chain
-verification is not possible there (src/audit_checks.py records that as a result).
+The cost depends on depth and proof length, not on how many models are registered, so
+we register only a random sample (fixed seed, up to --per-depth per depth) and its
+ancestors. Checks go through VerifyProbe.sol, so the numbers exclude the 21,000 base
+cost and call data that estimate_gas adds. The event design is left out: contracts
+cannot read event logs.
 """
 
 from __future__ import annotations
@@ -163,7 +147,7 @@ def main() -> None:
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     with args.out.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=COLUMNS)
+        writer = csv.DictWriter(f, fieldnames=COLUMNS, lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
     print(f"Wrote {len(rows)} rows to {args.out}")

@@ -1,24 +1,13 @@
-"""Register every model of the tree on a blockchain with each design and save the gas.
+"""Register every model of the tree under each design and record the gas.
 
-How to run (from the repo root, with `anvil` running and after `forge build`):
-    python src/replay.py
-
-Small test run on Sepolia (needs .env with SEPOLIA_RPC_URL and PRIVATE_KEY, and test ETH):
+    python src/replay.py                                    # Anvil, all models
     python src/replay.py --network sepolia --max-models 24 --batch-sizes 1 8
 
-Each design starts with a new contract and gets the same models in the same order:
-    storage - one transaction per model, the record is kept in contract storage
-    event   - one transaction per model, the record is only written to the event log
-    merkle  - one transaction per batch of k models, only the batch's root is kept
+Designs: storage (record in storage), event (record only in the log), merkle (one root
+per batch of k models). Each gets a new contract and the same models in the same order;
+parents come first, so --max-models never cuts off a parent.
 
-Results:
-    data/results/gas.csv        gas for every model under every design
-    data/results/run_meta.json  details of the run: chain, blocks, compiler, which tree
-                                file was used, skipped models, and contract addresses
-On Sepolia the same two files go to data/results/sepolia/.
-
---max-models N takes only the first N models. Parents always come before their
-children in the list, so a model's parent is never cut off.
+Writes data/results/gas.csv and run_meta.json (on Sepolia: data/results/sepolia/).
 """
 from __future__ import annotations
 
@@ -176,7 +165,7 @@ def main() -> None:
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     with args.out.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=GAS_COLUMNS)
+        writer = csv.DictWriter(f, fieldnames=GAS_COLUMNS, lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
 
