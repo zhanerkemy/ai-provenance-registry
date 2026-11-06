@@ -7,7 +7,7 @@ Research project for CSCI 435 Blockchain and Cryptocurrencies, Nazarbayev Univer
 
 ## Team
 - Ayaulym Zhumagul
-- Zhanerke
+- Zhanerke My
 - Dana
 
 ## Repository structure
@@ -82,6 +82,19 @@ committed tree.
 In the paper, `\input{tables/numbers.tex}` once in the preamble, then write
 `\result{tree.registrable}` instead of typing 1,071; the keys are listed in the file.
 A wrong key prints as **??key** in the PDF.
+
+### One-command check
+
+To check that everything regenerates, run one command:
+
+```bash
+python src/reproduce.py           
+python src/reproduce.py --quick  
+```
+It runs steps 1 and 3 to 10 on its own Anvil (you do not need to open one) and tells
+you if any result, table or number came out different. `run_meta.json` and the PNG
+figures always change a little (run time, fonts), so they are not counted. Undo those
+changes afterwards with `git restore data figures`.
 
 ### Sepolia check (optional, needs test ETH)
 
