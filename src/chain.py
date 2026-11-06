@@ -1,16 +1,9 @@
-"""Helpers for connecting to a blockchain from Python with web3.py.
+"""Helpers to connect to a chain, deploy our contracts and send transactions (web3.py).
 
-We use two networks:
-    anvil    A local test chain from Foundry. Run `anvil` in a separate terminal and
-             keep it open (it uses http://127.0.0.1:8545). Its 10 accounts already have
-             test ETH and are unlocked, so we do not need a private key.
-    sepolia  A public Ethereum test network. Every transaction has to be signed with
-             our private key and paid for with free Sepolia test ETH. The RPC URL and
-             the key are read from .env (see .env.example). We use a separate wallet
-             only for this project. .env is never committed (.gitignore).
+    anvil    local chain (run `anvil`); its accounts are unlocked, no key needed
+    sepolia  public test chain; transactions are signed with the key from .env
 
-Before using this module run `forge build`: it reads each contract's ABI and bytecode
-from the out/ folder.
+Run `forge build` first: the compiled contracts are read from out/.
 """
 
 from __future__ import annotations
