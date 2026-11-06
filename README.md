@@ -16,7 +16,8 @@ src/            code: smart contracts (.sol) and Python scripts (.py)
 test/           Foundry tests (.t.sol) and pytest tests (test_*.py)
 data/           the model tree we downloaded, and results/ produced by the scripts
 docs/           measurement plan (written before measuring), Sepolia deployments
-figures/        figures from src/make_figures.py, tables/ from src/make_tables.py
+figures/        figures from src/make_figures.py; tables/ from src/make_tables.py and
+                src/make_numbers.py (every number quoted in the paper's text)
 notebooks/      analysis notebooks
 lib/            forge-std (git submodule)
 ```
@@ -66,16 +67,21 @@ Then, in a second terminal from the repository root (with the virtual environmen
 | 6. Gas for a contract to verify | `python src/verify_gas.py` | `data/results/verify_gas.csv` |
 | 7. Guarantee checks | `python src/audit_checks.py` | `data/results/guarantees.csv` |
 | 8. Figures | `python src/make_figures.py` | `figures/*.png` |
-| 9. Tables for the paper | `python src/make_tables.py` | `figures/tables/*.tex` |
+| 9. Tables for the paper | `python src/make_tables.py` | `figures/tables/gas_summary.tex`, `guarantees.tex` |
+| 10. Numbers for the paper's text | `python src/make_numbers.py` | `figures/tables/numbers.tex` |
 | Tests | `forge test` and `python -m pytest` | |
 
 Step 2 reads the live Hugging Face Hub, so re-running it on a later date can give a
 different tree. To reproduce our exact numbers, skip step 2 and use the committed
-`data/hf_tree.csv` (its pull date is in `data/hf_tree_meta.json`). Steps 3 to 9 are
+`data/hf_tree.csv` (its pull date is in `data/hf_tree_meta.json`). Steps 3 to 10 are
 deterministic on Anvil: running them again gives the same files. Step 4 takes about
 7 minutes; the others take seconds. `verify_gas.py` samples models with the fixed seed
 435 (`--seed`). `test/test_results.py` checks that the committed results match the
 committed tree.
+
+In the paper, `\input{tables/numbers.tex}` once in the preamble, then write
+`\result{tree.registrable}` instead of typing 1,071; the keys are listed in the file.
+A wrong key prints as **??key** in the PDF.
 
 ### Sepolia check (optional, needs test ETH)
 
