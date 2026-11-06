@@ -174,7 +174,7 @@ def main() -> None:
 
     values = collect(args.data, args.results)
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(to_latex(values), encoding="utf-8")
+    args.out.write_text(to_latex(values), encoding="utf-8", newline="\n")
     width = max(map(len, values))
     for key in sorted(values):
         print(f"  {key:<{width}}  {values[key]}")

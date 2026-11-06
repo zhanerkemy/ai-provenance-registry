@@ -95,7 +95,7 @@ def main() -> None:
 
     stats = tree_stats(read_tree_csv(args.tree))
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(json.dumps(stats, indent=2) + "\n", encoding="utf-8")
+    args.out.write_text(json.dumps(stats, indent=2) + "\n", encoding="utf-8", newline="\n")
     print(json.dumps(stats, indent=2))
 
 

@@ -298,7 +298,7 @@ def write_meta(path: Path, base: str, args: argparse.Namespace, nodes: list[Node
         "n_models": len(nodes),
         **info,
     }
-    path.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
+    path.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8", newline="\n")
 
 
 def main() -> None:

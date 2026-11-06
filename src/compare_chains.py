@@ -100,9 +100,10 @@ def main() -> None:
     result = compare(read_rows(args.anvil / "gas.csv"), read_rows(args.public / "gas.csv"),
                      anvil_meta, public_meta)
 
-    args.out.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+    args.out.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8", newline="\n")
     args.deployments.parent.mkdir(parents=True, exist_ok=True)
-    args.deployments.write_text(deployments_markdown(public_meta), encoding="utf-8")
+    args.deployments.write_text(deployments_markdown(public_meta), encoding="utf-8",
+                                newline="\n")
 
     print(f"{result['transactions_identical']} of {result['transactions_compared']} "
           "transactions used identical gas on both chains")

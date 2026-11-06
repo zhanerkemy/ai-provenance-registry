@@ -193,7 +193,7 @@ def main() -> None:
         "excluded_by_reason": reasons,
     }
     meta_path = args.out.with_name("run_meta.json")
-    meta_path.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
+    meta_path.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8", newline="\n")
     print(f"Wrote {len(rows)} rows to {args.out} and run details to {meta_path}")
 
 

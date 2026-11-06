@@ -122,9 +122,10 @@ def main() -> None:
     r = args.results
     (args.out_dir / "gas_summary.tex").write_text(gas_summary(
         read_csv(r / "gas.csv"), read_csv(r / "verify_gas.csv"),
-        json.loads((r / "run_meta.json").read_text(encoding="utf-8"))), encoding="utf-8")
+        json.loads((r / "run_meta.json").read_text(encoding="utf-8"))),
+        encoding="utf-8", newline="\n")
     (args.out_dir / "guarantees.tex").write_text(
-        guarantees(read_csv(r / "guarantees.csv")), encoding="utf-8")
+        guarantees(read_csv(r / "guarantees.csv")), encoding="utf-8", newline="\n")
     print(f"Tables written to {args.out_dir}/")
 
 
