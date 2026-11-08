@@ -42,3 +42,5 @@ jobs:
 
       - name: Python tests (the Anvil tests start their own local chain)
         run: python -m pytest -v
+      - name: Regenerate results from the committed tree and compare (reproduction check)
+        run: python src/reproduce.py --quick
