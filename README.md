@@ -7,7 +7,7 @@ Research project for CSCI 435 Blockchain and Cryptocurrencies, Nazarbayev Univer
 
 ## Team
 - Ayaulym Zhumagul
-- Zhanerke My
+- Zhanerke
 - Dana
 
 ## Repository structure
@@ -18,7 +18,7 @@ data/           the model tree we downloaded, and results/ produced by the scrip
 docs/           measurement plan (written before measuring), Sepolia deployments
 figures/        figures from src/make_figures.py; tables/ from src/make_tables.py and
                 src/make_numbers.py (every number quoted in the paper's text)
-notebooks/      analysis notebooks
+notebooks/      results_walkthrough.ipynb: the data behind each claim, step by step
 lib/            forge-std (git submodule)
 ```
 
@@ -85,16 +85,11 @@ A wrong key prints as **??key** in the PDF.
 
 ### One-command check
 
-To check that everything regenerates, run one command:
-
-```bash
-python src/reproduce.py           
-python src/reproduce.py --quick  
-```
-It runs steps 1 and 3 to 10 on its own Anvil (you do not need to open one) and tells
-you if any result, table or number came out different. `run_meta.json` and the PNG
-figures always change a little (run time, fonts), so they are not counted. Undo those
-changes afterwards with `git restore data figures`.
+`python src/reproduce.py` runs steps 1 and 3 to 10 on its own Anvil (no need to open one)
+and reports whether any result, table or number differs from the committed version.
+Add `--quick` to reuse the committed `gas.csv` and finish in about a minute. Two changes
+are expected and allowed: `run_meta.json` (when the run happened, which blocks) and the
+PNGs (fonts render differently on each system). `git restore data figures` undoes them.
 
 ### Sepolia check (optional, needs test ETH)
 
@@ -110,6 +105,14 @@ python src/compare_chains.py
 This writes `data/results/sepolia/`, `data/results/chain_check.json` and
 `docs/deployments.md` (contract addresses and block range). The script estimates the
 cost first and stops if the wallet cannot pay for it.
+
+## Exploring the results
+
+`notebooks/results_walkthrough.ipynb` reads the committed results and walks through
+the tree, registration gas, verification gas and the guarantees, ending with the list
+of every number the paper quotes. It is committed with its outputs, so GitHub shows it
+without running anything. To run it yourself: `pip install notebook==7.2.2`, then
+`jupyter notebook notebooks/results_walkthrough.ipynb`.
 
 ## Reused code
 
