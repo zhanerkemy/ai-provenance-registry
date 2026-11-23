@@ -40,6 +40,9 @@ jobs:
       - name: Solidity tests
         run: forge test -vv
 
+      - name: Contract gas matches .gas-snapshot (fuzz tests excluded, their runs differ in CI)
+        run: forge snapshot --no-match-test testFuzz --check
+
       - name: Python tests (the Anvil tests start their own local chain)
         run: python -m pytest -v
       - name: Regenerate results from the committed tree and compare (reproduction check)

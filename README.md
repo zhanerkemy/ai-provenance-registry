@@ -7,8 +7,8 @@ Research project for CSCI 435 Blockchain and Cryptocurrencies, Nazarbayev Univer
 
 ## Team
 - Ayaulym Zhumagul
-- Zhanerke
-- Dana
+- Zhanerke Myrzabekova
+- Dana Koshkinbayeva
 
 ## Repository structure
 ```
@@ -70,6 +70,7 @@ Then, in a second terminal from the repository root (with the virtual environmen
 | 9. Tables for the paper | `python src/make_tables.py` | `figures/tables/gas_summary.tex`, `guarantees.tex`, `sepolia_gas.tex` |
 | 10. Numbers for the paper's text | `python src/make_numbers.py` | `figures/tables/numbers.tex` |
 | Tests | `forge test` and `python -m pytest` | |
+| Contract gas check | `forge snapshot --no-match-test testFuzz --check` | compares with `.gas-snapshot` |
 
 Step 2 reads the live Hugging Face Hub, so re-running it on a later date can give a
 different tree. To reproduce our exact numbers, skip step 2 and use the committed
@@ -115,11 +116,20 @@ model on both chains over the same models (`"by_design"` in `chain_check.json`).
 Steps 8 to 10 turn this into `figures/sepolia_vs_anvil.png`, `figures/tables/sepolia_gas.tex`
 and the `sepolia.*` numbers.
 
+### Contract gas snapshot
+
+`.gas-snapshot` records the gas of every Foundry test (fuzz tests excluded, because their
+inputs change with the number of runs). CI fails if a contract change alters any of these
+numbers, so gas in the paper cannot drift silently. After an intended contract change,
+regenerate it with `forge snapshot --no-match-test testFuzz` and commit it together with
+the new results.
+
 ## Exploring the results
 
 `notebooks/results_walkthrough.ipynb` reads the committed results and walks through
-the tree, registration gas, verification gas and the guarantees, ending with the list
-of every number the paper quotes. It is committed with its outputs, so GitHub shows it
+the tree, registration gas, verification gas, the guarantees and the Sepolia comparison,
+ending with the list of every number the paper quotes. It is committed with its outputs,
+so GitHub shows it
 without running anything. To run it yourself: `pip install notebook==7.2.2`, then
 `jupyter notebook notebooks/results_walkthrough.ipynb`.
 
