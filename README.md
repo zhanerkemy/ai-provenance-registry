@@ -1,6 +1,8 @@
 # ai-provenance-registry
 [![tests](https://github.com/zhanerkemy/ai-provenance-registry/actions/workflows/test.yml/badge.svg)](https://github.com/zhanerkemy/ai-provenance-registry/actions/workflows/test.yml)
 
+[![DOI](https://zenodo.org/badge/1383132152.svg)](https://doi.org/10.5281/zenodo.24470607)
+
 Blockchain-based registry for tracking AI model versions, training-data hashes, ownership, and provenance on-chain.
 
 Research project for CSCI 435 Blockchain and Cryptocurrencies, Nazarbayev University, Fall 2026.
@@ -147,8 +149,11 @@ and were reviewed, run, tested and modified by the team, who can explain every p
 
 ## How to cite
 
-See `CITATION.cff`; GitHub turns it into the "Cite this repository" button on the
-repository page.
+This repository is archived on Zenodo.
+
+DOI: https://doi.org/10.5281/zenodo.24470607
+
+Citation information is available in `CITATION.cff`.
 
 ## License
 MIT. See `LICENSE`.
