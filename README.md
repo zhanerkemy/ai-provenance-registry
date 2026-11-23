@@ -145,5 +145,10 @@ All other code in `src/` and `test/` was written for this project.
 Parts of the code were drafted with the help of an AI assistant (Claude, Anthropic)
 and were reviewed, run, tested and modified by the team, who can explain every part.
 
+## How to cite
+
+See `CITATION.cff`; GitHub turns it into the "Cite this repository" button on the
+repository page.
+
 ## License
 MIT. See `LICENSE`.

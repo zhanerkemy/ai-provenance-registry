@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this code or its results, please cite it as below."
+title: "ai-provenance-registry: storage, event-log and Merkle-batched designs for on-chain AI model provenance"
+type: software
+authors:
+  - given-names: Ayaulym
+    family-names: Zhumagul
+  - given-names: Zhanerke
+    family-names: My
+  - given-names: Dana
+repository-code: "https://github.com/zhanerkemy/ai-provenance-registry"
+license: MIT
+version: "1.0.0"
+date-released: "2026-11-29"
+keywords:
+  - blockchain
+  - provenance
+  - machine learning model registry
+  - gas measurement
+  - Merkle tree
