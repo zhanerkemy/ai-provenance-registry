@@ -6,8 +6,9 @@ authors:
   - given-names: Ayaulym
     family-names: Zhumagul
   - given-names: Zhanerke
-    family-names: My
+    family-names: Myrzabekova
   - given-names: Dana
+    family-names: Koshkinbayeva
 repository-code: "https://github.com/zhanerkemy/ai-provenance-registry"
 license: MIT
 version: "1.0.0"
