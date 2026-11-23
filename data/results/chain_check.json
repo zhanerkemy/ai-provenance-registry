@@ -617,6 +617,7 @@
       "batch_size": 1,
       "anvil_gas": 645733,
       "sepolia_gas": 4445049,
+      "ratio": 6.88,
       "identical": false
     },
     {
@@ -624,6 +625,7 @@
       "batch_size": 1,
       "anvil_gas": 174223,
       "sepolia_gas": 1072401,
+      "ratio": 6.16,
       "identical": false
     },
     {
@@ -631,6 +633,7 @@
       "batch_size": 1,
       "anvil_gas": 435821,
       "sepolia_gas": 2943527,
+      "ratio": 6.75,
       "identical": false
     },
     {
@@ -638,7 +641,42 @@
       "batch_size": 8,
       "anvil_gas": 435821,
       "sepolia_gas": 2943527,
+      "ratio": 6.75,
       "identical": false
+    }
+  ],
+  "by_design": [
+    {
+      "design": "storage",
+      "batch_size": 1,
+      "models": 24,
+      "anvil_mean_gas_per_model": 226753,
+      "sepolia_mean_gas_per_model": 986209,
+      "ratio": 4.35
+    },
+    {
+      "design": "event",
+      "batch_size": 1,
+      "models": 24,
+      "anvil_mean_gas_per_model": 34174,
+      "sepolia_mean_gas_per_model": 38741,
+      "ratio": 1.13
+    },
+    {
+      "design": "merkle",
+      "batch_size": 1,
+      "models": 24,
+      "anvil_mean_gas_per_model": 76320,
+      "sepolia_mean_gas_per_model": 256827,
+      "ratio": 3.37
+    },
+    {
+      "design": "merkle",
+      "batch_size": 8,
+      "models": 24,
+      "anvil_mean_gas_per_model": 10162,
+      "sepolia_mean_gas_per_model": 35672,
+      "ratio": 3.51
     }
   ]
 }

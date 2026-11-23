@@ -93,8 +93,9 @@ PNGs (fonts render differently on each system). `git restore data figures` undoe
 
 ### Sepolia check (optional, needs test ETH)
 
-The main numbers come from Anvil. To check that a public network charges the same gas,
-we replay a small sample on the Sepolia testnet and compare transaction by transaction:
+The main numbers come from Anvil, which uses the same gas rules as Ethereum mainnet. To
+check them on a public network, we replay a small sample on the Sepolia testnet and
+compare transaction by transaction:
 
 ```bash
 cp .env.example .env          # then fill in SEPOLIA_RPC_URL and PRIVATE_KEY (a test-only wallet)
@@ -105,6 +106,12 @@ python src/compare_chains.py
 This writes `data/results/sepolia/`, `data/results/chain_check.json` and
 `docs/deployments.md` (contract addresses and block range). The script estimates the
 cost first and stops if the wallet cannot pay for it.
+
+What we found: no transaction used the same gas on both chains. Sepolia switched to the
+Glamsterdam upgrade on 6 October 2026, which raises the price of creating new state
+(storage slots and contract code), while mainnet and Anvil still use the previous
+rules. `compare_chains.py` therefore also reports, for each design, the mean gas per
+model on both chains over the same models (`"by_design"` in `chain_check.json`).
 
 ## Exploring the results
 

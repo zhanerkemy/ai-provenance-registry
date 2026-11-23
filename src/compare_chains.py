@@ -3,12 +3,17 @@
 Run after both replays (Anvil full tree, Sepolia sample):
     python src/compare_chains.py
 
-Our numbers come from Anvil, a chain on our own laptop. Gas is set by the EVM rules,
-not by the network, so Sepolia should give exactly the same numbers. This script
-checks it, and any difference is reported, not hidden.
+Our numbers come from Anvil, a chain on our own laptop. Gas is set by the EVM rules
+(the hardfork a chain runs), not by the network, so two chains on the same rules give
+exactly the same numbers. This script checks it, and any difference is reported, not
+hidden. Our run found differences in every transaction: Sepolia switched to the
+Glamsterdam rules on 6 October 2026, which raise the price of creating new state
+(storage slots, contract code), while Anvil and Ethereum mainnet still use the previous
+rules. So the script also summarises the difference per design: how many times more each
+design costs on Sepolia, measured on exactly the same models.
 
-Writes data/results/chain_check.json (the comparison) and docs/deployments.md
-(Sepolia contract addresses and blocks).
+Writes data/results/chain_check.json (the comparison, with "by_design") and
+docs/deployments.md (Sepolia contract addresses and blocks).
 """
 
 from __future__ import annotations
@@ -29,6 +34,33 @@ def read_rows(path: Path) -> dict[tuple, dict]:
     return {(r["design"], int(r["batch_size"]), r["model_id"]): r for r in rows}
 
 
+def read_all_rows(path: Path) -> list[dict]:
+    with path.open(newline="", encoding="utf-8") as f:
+        return list(csv.DictReader(f))
+
+
+def by_design(anvil_rows: list[dict], public_rows: list[dict]) -> list[dict]:
+    """Mean gas per model for each design on both chains, over the SAME models: the
+    Sepolia sample is only the first models of the tree, so the Anvil mean is taken over
+    those models too, not over the whole tree. Ratio = Sepolia / Anvil."""
+    anvil = {(r["design"], int(r["batch_size"]), r["model_id"]): float(r["gas_per_model"])
+             for r in anvil_rows}
+    groups: dict[tuple[str, int], list[tuple[float, float]]] = {}
+    for r in public_rows:
+        key = (r["design"], int(r["batch_size"]))
+        groups.setdefault(key, []).append(
+            (anvil[(*key, r["model_id"])], float(r["gas_per_model"])))
+    out = []
+    for (design, k), pairs in sorted(groups.items(), key=lambda g: (g[0][0] != "storage",
+                                                                    g[0][0], g[0][1])):
+        a = sum(p[0] for p in pairs) / len(pairs)
+        s = sum(p[1] for p in pairs) / len(pairs)
+        out.append({"design": design, "batch_size": k, "models": len(pairs),
+                    "anvil_mean_gas_per_model": round(a), "sepolia_mean_gas_per_model": round(s),
+                    "ratio": round(s / a, 2)})
+    return out
+
+
 def compare(anvil: dict, public: dict, anvil_meta: dict, public_meta: dict) -> dict:
     differences = []
     for key, row in public.items():
@@ -46,6 +78,7 @@ def compare(anvil: dict, public: dict, anvil_meta: dict, public_meta: dict) -> d
         deploys.append({"design": c["design"], "batch_size": c["batch_size"],
                         "anvil_gas": a["deploy_gas"] if a else None,
                         "sepolia_gas": c["deploy_gas"],
+                        "ratio": round(c["deploy_gas"] / a["deploy_gas"], 2) if a else None,
                         "identical": bool(a) and a["deploy_gas"] == c["deploy_gas"]})
 
     return {
@@ -99,6 +132,8 @@ def main() -> None:
     public_meta = json.loads((args.public / "run_meta.json").read_text(encoding="utf-8"))
     result = compare(read_rows(args.anvil / "gas.csv"), read_rows(args.public / "gas.csv"),
                      anvil_meta, public_meta)
+    result["by_design"] = by_design(read_all_rows(args.anvil / "gas.csv"),
+                                    read_all_rows(args.public / "gas.csv"))
 
     args.out.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8", newline="\n")
     args.deployments.parent.mkdir(parents=True, exist_ok=True)
@@ -107,8 +142,10 @@ def main() -> None:
 
     print(f"{result['transactions_identical']} of {result['transactions_compared']} "
           "transactions used identical gas on both chains")
-    for d in result["differences"]:
-        print(f"  differs: {d}")
+    for d in result["by_design"]:
+        print(f"  {d['design']:<8} k={d['batch_size']:<3} {d['models']:>2} models: "
+              f"Anvil {d['anvil_mean_gas_per_model']:>9,}  Sepolia "
+              f"{d['sepolia_mean_gas_per_model']:>9,} gas per model  (x{d['ratio']})")
     print(f"Wrote {args.out} and {args.deployments}")
 
 
