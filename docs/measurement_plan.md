@@ -124,6 +124,10 @@ every parent is included), storage and event designs, Merkle batch sizes **1 and
 Success means every transaction uses exactly the same gas as the same transaction on
 Anvil. Any difference is reported in the paper with its explanation, not removed.
 
+What happened: no transaction matched (see the change log, 2026-11-25). The check now
+shows how much more each design costs on Sepolia, on the same 24 models. These numbers
+are in `"by_design"` in `data/results/chain_check.json`.
+
 ## Fixed decisions
 
 - Same models, same order (breadth-first, parents first), fresh contract per design.
@@ -157,7 +161,11 @@ Anvil. Any difference is reported in the paper with its explanation, not removed
   prove the training actually happened (see proof-of-learning literature).
 - Verification gas is measured for the first check in a transaction (cold storage
   access). Repeated checks in the same transaction are cheaper.
-- Sepolia is checked on a sample only.
+- Sepolia is checked on a sample only: 24 models, and Merkle only with k = 1 and 8.
+- Our main numbers use the gas rules of Ethereum mainnet today (Anvil). Sepolia already
+  runs the Glamsterdam rules, which are not on mainnet yet, and their prices may still
+  change before they reach mainnet. So the Sepolia numbers show the direction of the
+  change, not final mainnet prices.
 
 ## Change log
 
@@ -168,3 +176,14 @@ Anvil. Any difference is reported in the paper with its explanation, not removed
 - 2026-10-23 - Added, before measuring them: verification gas inside a contract
   (VerifyProbe), lineage verification gas, gas decomposition, executed guarantee checks
   (sub-question 4), and the Sepolia sample check. Planned figures 3 to 5 updated.
+- 2026-11-25 - Sepolia check result: 0 of 75 transactions used the same gas as on
+  Anvil, so the plan's success condition was not met. The reason is not our code:
+  Sepolia switched to the Glamsterdam upgrade on 6 October 2026, and its EIP-8037 makes
+  creating new state (new storage slots, contract code) more expensive. Anvil and
+  mainnet still use the old prices. Our data fits this: the first event transaction and
+  the first Merkle batch each cost 80,820 gas more than the later ones on Sepolia, which
+  is the extra price of one new storage slot (the counter going from 0 to 1). We kept
+  the Sepolia run and changed what the check is for: instead of confirming our numbers,
+  it now measures how much each design is affected (storage x4.35, events x1.13, Merkle
+  x3.37 for k = 1 and x3.51 for k = 8). This change was decided *after* we saw the
+  result, not before measuring.
