@@ -53,3 +53,20 @@ def test_unknown_key_is_visible_in_the_pdf():
     tex = to_latex({"gas.storage": "1"})
     assert r"\textbf{??#1}" in tex
     assert r"\csname res:gas.storage\endcsname{1}" in tex
+
+
+def test_sepolia_text_and_table_quote_the_same_numbers():
+    """The per-design Sepolia numbers in the text and in tables/sepolia_gas.tex agree."""
+    table = (ROOT / "figures" / "tables" / "sepolia_gas.tex").read_text(encoding="utf-8")
+    values = collect(DATA, RESULTS)
+    for name in ["storage", "event", "merkle.1", "merkle.8"]:
+        for part in ["anvil", "sepolia", "ratio", "deployratio"]:
+            assert values[f"sepolia.{name}.{part}"] in table, f"sepolia.{name}.{part}"
+
+
+def test_sepolia_ratios_follow_from_the_gas_numbers():
+    values = collect(DATA, RESULTS)
+    as_float = lambda k: float(values[k].replace("{,}", ""))  # noqa: E731
+    for name in ["storage", "event", "merkle.1", "merkle.8"]:
+        ratio = as_float(f"sepolia.{name}.sepolia") / as_float(f"sepolia.{name}.anvil")
+        assert abs(ratio - as_float(f"sepolia.{name}.ratio")) < 0.01, name

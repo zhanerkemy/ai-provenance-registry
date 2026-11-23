@@ -137,6 +137,32 @@ def run_numbers(meta: dict, chain_check: dict | None) -> dict[str, str]:
     if chain_check is not None:
         out["sepolia.compared"] = num(chain_check["transactions_compared"])
         out["sepolia.identical"] = num(chain_check["transactions_identical"])
+        out.update(sepolia_design_numbers(chain_check))
+    return out
+
+
+def sepolia_design_numbers(check: dict) -> dict[str, str]:
+    """Per design, on the same models: Anvil gas, Sepolia gas, and Sepolia / Anvil.
+    Keys: sepolia.<design>.anvil / .sepolia / .ratio / .deployratio, where <design> is
+    storage, event, merkle.1, merkle.8; plus how far apart storage and events are on each
+    chain (sepolia.gap.anvil, sepolia.gap.sepolia)."""
+    rows = check.get("by_design")
+    if not rows:
+        return {}
+    deploys = {(d["design"], d["batch_size"]): d for d in check["deployments"]}
+    out = {"sepolia.models": str(rows[0]["models"])}
+    by_name = {}
+    for r in rows:
+        name = r["design"] if r["design"] != "merkle" else f"merkle.{r['batch_size']}"
+        by_name[name] = r
+        out[f"sepolia.{name}.anvil"] = num(r["anvil_mean_gas_per_model"])
+        out[f"sepolia.{name}.sepolia"] = num(r["sepolia_mean_gas_per_model"])
+        out[f"sepolia.{name}.ratio"] = f"{r['ratio']:.2f}"
+        out[f"sepolia.{name}.deployratio"] = f"{deploys[(r['design'], r['batch_size'])]['ratio']:.2f}"
+    if "storage" in by_name and "event" in by_name:
+        s, e = by_name["storage"], by_name["event"]
+        out["sepolia.gap.anvil"] = f"{s['anvil_mean_gas_per_model'] / e['anvil_mean_gas_per_model']:.1f}"
+        out["sepolia.gap.sepolia"] = f"{s['sepolia_mean_gas_per_model'] / e['sepolia_mean_gas_per_model']:.1f}"
     return out
 
 

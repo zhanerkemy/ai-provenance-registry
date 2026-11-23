@@ -67,7 +67,7 @@ Then, in a second terminal from the repository root (with the virtual environmen
 | 6. Gas for a contract to verify | `python src/verify_gas.py` | `data/results/verify_gas.csv` |
 | 7. Guarantee checks | `python src/audit_checks.py` | `data/results/guarantees.csv` |
 | 8. Figures | `python src/make_figures.py` | `figures/*.png` |
-| 9. Tables for the paper | `python src/make_tables.py` | `figures/tables/gas_summary.tex`, `guarantees.tex` |
+| 9. Tables for the paper | `python src/make_tables.py` | `figures/tables/gas_summary.tex`, `guarantees.tex`, `sepolia_gas.tex` |
 | 10. Numbers for the paper's text | `python src/make_numbers.py` | `figures/tables/numbers.tex` |
 | Tests | `forge test` and `python -m pytest` | |
 
@@ -112,6 +112,8 @@ Glamsterdam upgrade on 6 October 2026, which raises the price of creating new st
 (storage slots and contract code), while mainnet and Anvil still use the previous
 rules. `compare_chains.py` therefore also reports, for each design, the mean gas per
 model on both chains over the same models (`"by_design"` in `chain_check.json`).
+Steps 8 to 10 turn this into `figures/sepolia_vs_anvil.png`, `figures/tables/sepolia_gas.tex`
+and the `sepolia.*` numbers.
 
 ## Exploring the results
 

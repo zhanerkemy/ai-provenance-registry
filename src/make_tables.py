@@ -4,9 +4,11 @@ tables are never typed by hand: a number in the paper must come from a script (S
 Usage (from the repository root):
     python src/make_tables.py
 
-Reads   data/results/{gas.csv, run_meta.json, verify_gas.csv, guarantees.csv}
+Reads   data/results/{gas.csv, run_meta.json, verify_gas.csv, guarantees.csv,
+                      chain_check.json (if the Sepolia check has been run)}
 Writes  figures/tables/gas_summary.tex   cost of registering and of checking, by design
         figures/tables/guarantees.tex    which audit checks each design keeps
+        figures/tables/sepolia_gas.tex   the same models on Anvil and on Sepolia, by design
 
 In the paper (IEEEtran), with \\usepackage{booktabs} in the preamble:
     \\begin{table}[t]
@@ -112,6 +114,30 @@ def guarantees(rows: list[dict]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def sepolia_gas(check: dict) -> str:
+    """Anvil (current mainnet rules) against Sepolia (Glamsterdam rules) on the same models.
+    Registration columns come from chain_check.json "by_design", deployment from
+    "deployments"; the ratio is Sepolia / Anvil."""
+    deploys = {(d["design"], d["batch_size"]): d for d in check["deployments"]}
+    lines = [
+        r"\begin{tabular}{lrrrrr}",
+        r"\toprule",
+        r" & \multicolumn{3}{c}{Registration, gas per model} & "
+        r"\multicolumn{2}{c}{Deployment, gas} \\",
+        r"\cmidrule(lr){2-4}\cmidrule(lr){5-6}",
+        r"Design & Anvil & Sepolia & $\times$ & Sepolia & $\times$ \\",
+        r"\midrule",
+    ]
+    for row in check["by_design"]:
+        d = deploys[(row["design"], row["batch_size"])]
+        lines.append(f"{label(row['design'], row['batch_size'])} & "
+                     f"{num(row['anvil_mean_gas_per_model'])} & "
+                     f"{num(row['sepolia_mean_gas_per_model'])} & {row['ratio']:.2f} & "
+                     f"{num(d['sepolia_gas'])} & {d['ratio']:.2f} \\\\")
+    lines += [r"\bottomrule", r"\end{tabular}"]
+    return "\n".join(lines) + "\n"
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate the paper's LaTeX tables.")
     parser.add_argument("--results", type=Path, default=Path("data/results"))
@@ -126,6 +152,12 @@ def main() -> None:
         encoding="utf-8", newline="\n")
     (args.out_dir / "guarantees.tex").write_text(
         guarantees(read_csv(r / "guarantees.csv")), encoding="utf-8", newline="\n")
+    check = r / "chain_check.json"
+    if check.exists() and "by_design" in (data := json.loads(check.read_text(encoding="utf-8"))):
+        (args.out_dir / "sepolia_gas.tex").write_text(sepolia_gas(data), encoding="utf-8",
+                                                      newline="\n")
+    else:
+        print("skipped sepolia_gas.tex: run src/compare_chains.py after the Sepolia replay")
     print(f"Tables written to {args.out_dir}/")
 
 

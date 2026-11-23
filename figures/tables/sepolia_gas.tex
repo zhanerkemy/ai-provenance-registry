@@ -1,0 +1,12 @@
+\begin{tabular}{lrrrrr}
+\toprule
+ & \multicolumn{3}{c}{Registration, gas per model} & \multicolumn{2}{c}{Deployment, gas} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-6}
+Design & Anvil & Sepolia & $\times$ & Sepolia & $\times$ \\
+\midrule
+Storage & 226{,}753 & 986{,}209 & 4.35 & 4{,}445{,}049 & 6.88 \\
+Event-only & 34{,}174 & 38{,}741 & 1.13 & 1{,}072{,}401 & 6.16 \\
+Merkle, $k=1$ & 76{,}320 & 256{,}827 & 3.37 & 2{,}943{,}527 & 6.75 \\
+Merkle, $k=8$ & 10{,}162 & 35{,}672 & 3.51 & 2{,}943{,}527 & 6.75 \\
+\bottomrule
+\end{tabular}

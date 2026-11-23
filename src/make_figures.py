@@ -3,12 +3,14 @@
 Usage (from the repository root):
     python src/make_figures.py
 
-Reads   data/hf_tree.csv and data/results/{gas.csv, verify_gas.csv, gas_model.json}
+Reads   data/hf_tree.csv and data/results/{gas.csv, verify_gas.csv, gas_model.json,
+        chain_check.json}
 Writes  figures/tree_by_depth.png          models at each depth, split by relation
         figures/tree_registrability.png    how many models can go on-chain, and why not
         figures/gas_per_model.png          main figure: gas per registered model, by design
         figures/verify_gas.png             gas for a contract to verify a record / a lineage
         figures/storage_gas_breakdown.png  storage gas against URI length, with fitted model
+        figures/sepolia_vs_anvil.png       the same models on Anvil and on Sepolia, by design
 
 A gas figure is skipped (with a message) if its results file does not exist yet.
 """
@@ -264,6 +266,42 @@ def plot_storage_breakdown(gas_rows: list[dict], has_data: dict[str, bool], mode
     plt.close(fig)
 
 
+def plot_sepolia(check: dict, out: Path) -> None:
+    """Gas per model for the same models on Anvil (current mainnet rules, open circle) and
+    on Sepolia (Glamsterdam rules, filled), one row per design, log scale. The label is
+    Sepolia / Anvil: the longer the line, the harder the design is hit by the new prices
+    for creating state. Storage moves most, events least, so the designs move apart."""
+    rows = check["by_design"]
+    fig, ax = plt.subplots(figsize=(6.4, 0.5 * len(rows) + 1.2), dpi=200)
+    y = list(range(len(rows)))[::-1]
+    for yi, r in zip(y, rows):
+        a, s = r["anvil_mean_gas_per_model"], r["sepolia_mean_gas_per_model"]
+        color = DESIGN_COLORS[r["design"]]
+        ax.hlines(yi, a, s, color=color, linewidth=2, alpha=0.5, zorder=2)
+        ax.scatter([a], [yi], s=60, facecolor=SURFACE, edgecolor=color, linewidth=1.8, zorder=3)
+        ax.scatter([s], [yi], s=60, color=color, edgecolor=SURFACE, linewidth=1.5, zorder=3)
+        ax.annotate(f"\u00d7{r['ratio']:.2f}", (s, yi), xytext=(8, 0), textcoords="offset points",
+                    va="center", fontsize=8, color=TEXT)
+    style_axes(ax)
+    ax.set_xscale("log")
+    ax.xaxis.grid(True, which="major", color=GRID, linewidth=0.8)
+    ax.xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: f"{v:,.0f}"))
+    lo = min(r["anvil_mean_gas_per_model"] for r in rows)
+    hi = max(r["sepolia_mean_gas_per_model"] for r in rows)
+    ax.set_xlim(lo / 2, hi * 3)
+    ax.set_ylim(-0.6, len(rows) - 0.4)
+    ax.set_yticks(y, [design_label(r["design"], r["batch_size"]) for r in rows],
+                  color=TEXT, fontsize=8)
+    ax.scatter([], [], s=40, facecolor=SURFACE, edgecolor=TEXT_MUTED, label="Anvil (mainnet rules)")
+    ax.scatter([], [], s=40, color=TEXT_MUTED, label="Sepolia (Glamsterdam rules)")
+    ax.legend(loc="lower right", fontsize=7, frameon=False, labelcolor=TEXT_MUTED)
+    ax.set_xlabel(f"Gas per registered model (log scale; mean over the same "
+                  f"{rows[0]['models']} models on both chains)", color=TEXT_MUTED, fontsize=9)
+    fig.tight_layout()
+    fig.savefig(out, facecolor=SURFACE)
+    plt.close(fig)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate the paper's figures.")
     parser.add_argument("--tree", type=Path, default=Path("data/hf_tree.csv"))
@@ -296,6 +334,13 @@ def main() -> None:
                                args.out_dir / "storage_gas_breakdown.png")
     else:
         print("skipped storage_gas_breakdown.png: run src/replay.py and src/gas_model.py")
+
+    check_json = args.results / "chain_check.json"
+    check = json.loads(check_json.read_text(encoding="utf-8")) if check_json.exists() else {}
+    if "by_design" in check:
+        plot_sepolia(check, args.out_dir / "sepolia_vs_anvil.png")
+    else:
+        print("skipped sepolia_vs_anvil.png: run src/compare_chains.py after the Sepolia replay")
     print(f"Figures written to {args.out_dir}/")
 
 
