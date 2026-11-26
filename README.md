@@ -20,7 +20,8 @@ data/           the model tree we downloaded, and results/ produced by the scrip
 docs/           measurement plan (written before measuring), Sepolia deployments
 figures/        figures from src/make_figures.py; tables/ from src/make_tables.py,
                 src/make_numbers.py and src/make_extra_numbers.py (every number
-                quoted in the paper's text)
+                quoted in the paper's text); column/ from src/make_column_figures.py
+                (the same figures at one IEEE column wide, as used in the paper)
 notebooks/      results_walkthrough.ipynb: the data behind each claim, step by step
 lib/            forge-std (git submodule)
 ```
@@ -73,12 +74,13 @@ Then, in a second terminal from the repository root (with the virtual environmen
 | 9. Tables for the paper | `python src/make_tables.py` | `figures/tables/gas_summary.tex`, `guarantees.tex`, `sepolia_gas.tex` |
 | 10. Numbers for the paper's text | `python src/make_numbers.py` | `figures/tables/numbers.tex` |
 | 11. Derived numbers and tables for the paper | `python src/make_extra_numbers.py` | `figures/tables/extra_numbers.tex`, `depth_table.tex`, `sepolia_levels.tex` |
+| 12. Single-column figures for the paper | `python src/make_column_figures.py` | `figures/column/*.png` |
 | Tests | `forge test` and `python -m pytest` | |
 | Contract gas check | `forge snapshot --no-match-test testFuzz --check` | compares with `.gas-snapshot` |
 
 Step 2 reads the live Hugging Face Hub, so re-running it on a later date can give a
 different tree. To reproduce our exact numbers, skip step 2 and use the committed
-`data/hf_tree.csv` (its pull date is in `data/hf_tree_meta.json`). Steps 3 to 11 are
+`data/hf_tree.csv` (its pull date is in `data/hf_tree_meta.json`). Steps 3 to 12 are
 deterministic on Anvil: running them again gives the same files. Step 4 takes about
 7 minutes; the others take seconds. `verify_gas.py` samples models with the fixed seed
 435 (`--seed`). `test/test_results.py` checks that the committed results match the
@@ -92,7 +94,7 @@ A wrong key prints as **??key** in the PDF. Numbers derived from several results
 
 ### One-command check
 
-`python src/reproduce.py` runs steps 1 and 3 to 10 on its own Anvil (no need to open one)
+`python src/reproduce.py` runs steps 1 and 3 to 12 on its own Anvil (no need to open one)
 and reports whether any result, table or number differs from the committed version.
 Add `--quick` to reuse the committed `gas.csv` and finish in about a minute. Two changes
 are expected and allowed: `run_meta.json` (when the run happened, which blocks) and the

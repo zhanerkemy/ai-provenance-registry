@@ -3,7 +3,7 @@
     python src/reproduce.py            # about 8 minutes
     python src/reproduce.py --quick    # about 1 minute, reuses the committed gas.csv
 
-Runs README steps 1 and 3 to 10 on its own Anvil (on a free port), using the committed
+Runs README steps 1 and 3 to 12 on its own Anvil (on a free port), using the committed
 tree, then compares the files with git. Exit code 0 means everything came out the same.
 run_meta.json (run time, blocks) and the PNGs (fonts differ per system) may change.
 """
@@ -98,6 +98,8 @@ def main() -> int:
     run([py, "src/make_figures.py"])
     run([py, "src/make_tables.py"])
     run([py, "src/make_numbers.py"])
+    run([py, "src/make_extra_numbers.py"])
+    run([py, "src/make_column_figures.py"])
 
     unexpected, expected = verdict(changed_files())
     for f in expected:
