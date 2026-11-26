@@ -1,0 +1,9 @@
+No files changed, compilation skipped
+note[asm-keccak256]: use of inefficient hashing mechanism; consider using inline assembly
+  --> src\MerkleRegistry.sol:61:16
+   |
+61 |         return keccak256(bytes.concat(keccak256(abi.encode(weightsHash, dataHash, parentWeightsHash, uriHash))));
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: https://book.getfoundry.sh/reference/forge/forge-lint#asm-keccak256
+

@@ -1,0 +1,51 @@
+No files changed, compilation skipped
+
+Ran 6 tests for test/EventRegistry.t.sol:EventRegistryTest
+[PASS] test_DerivedModel_ByAnotherAccount() (gas: 48117)
+[PASS] test_RecordCanBeReadBackFromLogs() (gas: 42778)
+[PASS] test_Register_EmitsFullRecord() (gas: 41577)
+[PASS] test_RevertWhen_ParentDoesNotExist() (gas: 11322)
+[PASS] test_RevertWhen_WeightsHashIsZero() (gas: 8636)
+[PASS] test_SameWeightsCanBeRegisteredTwice() (gas: 41732)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 5.41ms (5.61ms CPU time)
+
+Ran 9 tests for test/MerkleRegistry.t.sol:MerkleRegistryTest
+[PASS] test_AnchorBatch_StoresAndEmits() (gas: 87065)
+[PASS] test_FourRecordBatch_EveryRecordVerifies() (gas: 126323)
+[PASS] test_OddBatch_LastRecordIsCarriedUp() (gas: 108552)
+[PASS] test_RecordDoesNotVerifyAgainstAnotherBatch() (gas: 162949)
+[PASS] test_RevertWhen_BatchDoesNotExist() (gas: 11996)
+[PASS] test_RevertWhen_BatchIsEmpty() (gas: 8721)
+[PASS] test_RevertWhen_RootIsZero() (gas: 8705)
+[PASS] test_SingleRecordBatch_HasEmptyProof() (gas: 86905)
+[PASS] test_TamperedRecord_DoesNotVerify() (gas: 111704)
+Suite result: ok. 9 passed; 0 failed; 0 skipped; finished in 6.17ms (9.06ms CPU time)
+
+Ran 7 tests for test/VerifyProbe.t.sol:VerifyProbeTest
+[PASS] test_ProbeLineage_DeeperModelCostsMore() (gas: 32871)
+[PASS] test_ProbeLineage_LengthIsDepthPlusOne() (gas: 25911)
+[PASS] test_ProbeVerifyRecord_LongerProofCostsMore() (gas: 149412)
+[PASS] test_ProbeVerifyRecord_SingleRecordBatch() (gas: 91237)
+[PASS] test_ProbeVerifyWeights_RevertsForUnknownModel() (gas: 16516)
+[PASS] test_ProbeVerifyWeights_SameAnswerAsRegistry() (gas: 18392)
+[PASS] test_SecondCheckInSameTransactionIsCheaper() (gas: 18276)
+Suite result: ok. 7 passed; 0 failed; 0 skipped; finished in 6.30ms (11.66ms CPU time)
+
+Ran 14 tests for test/ModelRegistry.t.sol:ModelRegistryTest
+[PASS] testFuzz_AnyNonZeroHash_CanBeRegisteredAndVerified(bytes32,bytes32) (runs: 256, μ: 133069, ~: 133147)
+[PASS] test_DerivedModel_ByAnotherAccount_IsAllowed() (gas: 296252)
+[PASS] test_GetLineage_OfBaseModel_IsJustItself() (gas: 153220)
+[PASS] test_GetLineage_WalksBackToBaseModel() (gas: 417859)
+[PASS] test_OwnerCanTransferOwnership() (gas: 163400)
+[PASS] test_RegisterBaseModel_StoresAllFields() (gas: 158515)
+[PASS] test_RegisterModel_EmitsEvent() (gas: 154529)
+[PASS] test_RevertWhen_NonOwnerTransfers() (gas: 155570)
+[PASS] test_RevertWhen_ParentDoesNotExist() (gas: 13718)
+[PASS] test_RevertWhen_SameWeightsRegisteredTwice() (gas: 155340)
+[PASS] test_RevertWhen_TransferToZeroAddress() (gas: 152469)
+[PASS] test_RevertWhen_WeightsHashIsZero() (gas: 8702)
+[PASS] test_UndisclosedTrainingData_IsAllowed() (gas: 134684)
+[PASS] test_VerifyWeights_MatchAndMismatch() (gas: 153189)
+Suite result: ok. 14 passed; 0 failed; 0 skipped; finished in 39.45ms (42.17ms CPU time)
+
+Ran 4 test suites in 45.84ms (57.33ms CPU time): 36 tests passed, 0 failed, 0 skipped (36 total tests)

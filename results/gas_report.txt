@@ -1,0 +1,131 @@
+No files changed, compilation skipped
+
+Ran 6 tests for test/VerifyProbe.t.sol:VerifyProbeTest
+[PASS] test_ProbeLineage_DeeperModelCostsMore() (gas: 41871)
+[PASS] test_ProbeLineage_LengthIsDepthPlusOne() (gas: 38911)
+[PASS] test_ProbeVerifyRecord_LongerProofCostsMore() (gas: 223128)
+[PASS] test_ProbeVerifyRecord_SingleRecordBatch() (gas: 137445)
+[PASS] test_ProbeVerifyWeights_RevertsForUnknownModel() (gas: 16516)
+[PASS] test_ProbeVerifyWeights_SameAnswerAsRegistry() (gas: 31392)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 7.80ms (9.81ms CPU time)
+
+Ran 9 tests for test/MerkleRegistry.t.sol:MerkleRegistryTest
+[PASS] test_AnchorBatch_StoresAndEmits() (gas: 117345)
+[PASS] test_FourRecordBatch_EveryRecordVerifies() (gas: 219807)
+[PASS] test_OddBatch_LastRecordIsCarriedUp() (gas: 168536)
+[PASS] test_RecordDoesNotVerifyAgainstAnotherBatch() (gas: 250205)
+[PASS] test_RevertWhen_BatchDoesNotExist() (gas: 11996)
+[PASS] test_RevertWhen_BatchIsEmpty() (gas: 30693)
+[PASS] test_RevertWhen_RootIsZero() (gas: 30305)
+[PASS] test_SingleRecordBatch_HasEmptyProof() (gas: 123389)
+[PASS] test_TamperedRecord_DoesNotVerify() (gas: 215188)
+Suite result: ok. 9 passed; 0 failed; 0 skipped; finished in 8.93ms (18.56ms CPU time)
+
+Ran 6 tests for test/EventRegistry.t.sol:EventRegistryTest
+[PASS] test_DerivedModel_ByAnotherAccount() (gas: 98105)
+[PASS] test_RecordCanBeReadBackFromLogs() (gas: 65582)
+[PASS] test_Register_EmitsFullRecord() (gas: 66381)
+[PASS] test_RevertWhen_ParentDoesNotExist() (gas: 33818)
+[PASS] test_RevertWhen_WeightsHashIsZero() (gas: 30736)
+[PASS] test_SameWeightsCanBeRegisteredTwice() (gas: 92116)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 8.81ms (12.28ms CPU time)
+
+Ran 14 tests for test/ModelRegistry.t.sol:ModelRegistryTest
+[PASS] testFuzz_AnyNonZeroHash_CanBeRegisteredAndVerified(bytes32,bytes32) (runs: 256, μ: 175857, ~: 176119)
+[PASS] test_DerivedModel_ByAnotherAccount_IsAllowed() (gas: 360684)
+[PASS] test_GetLineage_OfBaseModel_IsJustItself() (gas: 180024)
+[PASS] test_GetLineage_WalksBackToBaseModel() (gas: 503451)
+[PASS] test_OwnerCanTransferOwnership() (gas: 228576)
+[PASS] test_RegisterBaseModel_StoresAllFields() (gas: 210819)
+[PASS] test_RegisterModel_EmitsEvent() (gas: 177333)
+[PASS] test_RevertWhen_NonOwnerTransfers() (gas: 203946)
+[PASS] test_RevertWhen_ParentDoesNotExist() (gas: 36202)
+[PASS] test_RevertWhen_SameWeightsRegisteredTwice() (gas: 202564)
+[PASS] test_RevertWhen_TransferToZeroAddress() (gas: 198605)
+[PASS] test_RevertWhen_WeightsHashIsZero() (gas: 30802)
+[PASS] test_UndisclosedTrainingData_IsAllowed() (gas: 169104)
+[PASS] test_VerifyWeights_MatchAndMismatch() (gas: 188493)
+Suite result: ok. 14 passed; 0 failed; 0 skipped; finished in 48.76ms (70.16ms CPU time)
+
+╭----------------------------------------------+-----------------+-------+--------+-------+---------╮
+| src/EventRegistry.sol:EventRegistry Contract |                 |       |        |       |         |
++===================================================================================================+
+| Deployment Cost                              | Deployment Size |       |        |       |         |
+|----------------------------------------------+-----------------+-------+--------+-------+---------|
+| 174223                                       | 588             |       |        |       |         |
+|----------------------------------------------+-----------------+-------+--------+-------+---------|
+|                                              |                 |       |        |       |         |
+|----------------------------------------------+-----------------+-------+--------+-------+---------|
+| Function Name                                | Min             | Avg   | Median | Max   | # Calls |
+|----------------------------------------------+-----------------+-------+--------+-------+---------|
+| modelCount                                   | 2281            | 2281  | 2281   | 2281  | 1       |
+|----------------------------------------------+-----------------+-------+--------+-------+---------|
+| registerModel                                | 22596           | 38429 | 40496  | 49058 | 8       |
+╰----------------------------------------------+-----------------+-------+--------+-------+---------╯
+
+╭------------------------------------------------+-----------------+-------+--------+-------+---------╮
+| src/MerkleRegistry.sol:MerkleRegistry Contract |                 |       |        |       |         |
++=====================================================================================================+
+| Deployment Cost                                | Deployment Size |       |        |       |         |
+|------------------------------------------------+-----------------+-------+--------+-------+---------|
+| 435821                                         | 1798            |       |        |       |         |
+|------------------------------------------------+-----------------+-------+--------+-------+---------|
+|                                                |                 |       |        |       |         |
+|------------------------------------------------+-----------------+-------+--------+-------+---------|
+| Function Name                                  | Min             | Avg   | Median | Max   | # Calls |
+|------------------------------------------------+-----------------+-------+--------+-------+---------|
+| anchorBatch                                    | 22207           | 77897 | 92215  | 92773 | 12      |
+|------------------------------------------------+-----------------+-------+--------+-------+---------|
+| getBatch                                       | 7150            | 7150  | 7150   | 7150  | 1       |
+|------------------------------------------------+-----------------+-------+--------+-------+---------|
+| leafHash                                       | 672             | 672   | 672    | 672   | 19      |
+|------------------------------------------------+-----------------+-------+--------+-------+---------|
+| verifyRecord                                   | 3022            | 5945  | 6096   | 6433  | 18      |
+╰------------------------------------------------+-----------------+-------+--------+-------+---------╯
+
+╭----------------------------------------------+-----------------+--------+--------+--------+---------╮
+| src/ModelRegistry.sol:ModelRegistry Contract |                 |        |        |        |         |
++=====================================================================================================+
+| Deployment Cost                              | Deployment Size |        |        |        |         |
+|----------------------------------------------+-----------------+--------+--------+--------+---------|
+| 645733                                       | 2769            |        |        |        |         |
+|----------------------------------------------+-----------------+--------+--------+--------+---------|
+|                                              |                 |        |        |        |         |
+|----------------------------------------------+-----------------+--------+--------+--------+---------|
+| Function Name                                | Min             | Avg    | Median | Max    | # Calls |
+|----------------------------------------------+-----------------+--------+--------+--------+---------|
+| getLineage                                   | 5586            | 8313   | 8313   | 11040  | 6       |
+|----------------------------------------------+-----------------+--------+--------+--------+---------|
+| getModel                                     | 14300           | 14303  | 14300  | 14555  | 260     |
+|----------------------------------------------+-----------------+--------+--------+--------+---------|
+| idByWeightsHash                              | 2435            | 2435   | 2435   | 2435   | 1       |
+|----------------------------------------------+-----------------+--------+--------+--------+---------|
+| modelCount                                   | 2359            | 2359   | 2359   | 2359   | 1       |
+|----------------------------------------------+-----------------+--------+--------+--------+---------|
+| registerModel                                | 22662           | 142364 | 142383 | 165895 | 291     |
+|----------------------------------------------+-----------------+--------+--------+--------+---------|
+| transferOwnership                            | 23900           | 27218  | 26398  | 31358  | 3       |
+|----------------------------------------------+-----------------+--------+--------+--------+---------|
+| verifyWeights                                | 2535            | 4698   | 4707   | 4707   | 261     |
+╰----------------------------------------------+-----------------+--------+--------+--------+---------╯
+
+╭------------------------------------------+-----------------+-------+--------+-------+---------╮
+| src/VerifyProbe.sol:VerifyProbe Contract |                 |       |        |       |         |
++===============================================================================================+
+| Deployment Cost                          | Deployment Size |       |        |       |         |
+|------------------------------------------+-----------------+-------+--------+-------+---------|
+| 370747                                   | 1497            |       |        |       |         |
+|------------------------------------------+-----------------+-------+--------+-------+---------|
+|                                          |                 |       |        |       |         |
+|------------------------------------------+-----------------+-------+--------+-------+---------|
+| Function Name                            | Min             | Avg   | Median | Max   | # Calls |
+|------------------------------------------+-----------------+-------+--------+-------+---------|
+| probeLineage                             | 9357            | 12166 | 12166  | 14975 | 4       |
+|------------------------------------------+-----------------+-------+--------+-------+---------|
+| probeVerifyRecord                        | 10116           | 10196 | 10116  | 10439 | 4       |
+|------------------------------------------+-----------------+-------+--------+-------+---------|
+| probeVerifyWeights                       | 5672            | 7348  | 8187   | 8187  | 3       |
+╰------------------------------------------+-----------------+-------+--------+-------+---------╯
+
+
+Ran 4 test suites in 127.00ms (74.29ms CPU time): 35 tests passed, 0 failed, 0 skipped (35 total tests)
