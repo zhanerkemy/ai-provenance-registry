@@ -1,0 +1,14 @@
+\begin{tabular}{lrr}
+\toprule
+Transaction & Difference (gas) & Count \\
+\midrule
+Event-only, later registrations & 1{,}200 & 23 \\
+Event-only, first registration & 82{,}020 & 1 \\
+Merkle batch, later & 177{,}140 & 25 \\
+Merkle batch, first & 257{,}960 & 2 \\
+Storage, base model & 697{,}560 & 1 \\
+Storage, no data hash, 3-word URI & 704{,}760 & 12 \\
+Storage, data hash, 3-word URI & 792{,}780 & 7 \\
+Storage, data hash, 4-word URI & 880{,}700 & 4 \\
+\bottomrule
+\end{tabular}
