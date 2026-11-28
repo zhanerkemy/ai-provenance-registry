@@ -51,6 +51,15 @@ If you cloned without `--recurse-submodules`, run `git submodule update --init` 
 | Compiler | solc 0.8.24, optimizer on, 200 runs (`foundry.toml`) |
 | Chain for main runs | local Anvil (chain id 31337) |
 
+## Main Findings
+
+- 1,071 of 1,369 models (78.2%) were registrable.
+- Storage registration costs 219,771 gas per model.
+- Event-only registration reduces this cost to 33,360 gas.
+- Merkle batching with k = 128 reduces registration costs to 651 gas per model.
+- Lower registration costs come at the expense of on-chain verifiability.
+- None of the 75 matched Anvil–Sepolia transactions consumed identical amounts of gas.
+
 ## Reproducing results
 
 Start a local blockchain in one terminal and leave it open:
@@ -150,8 +159,7 @@ All other code in `src/` and `test/` was written for this project.
 
 ## Acknowledgements
 
-Parts of the code were drafted with the help of an AI assistant (Claude, Anthropic)
-and were reviewed, run, tested and modified by the team, who can explain every part.
+Language editing and technical clarification were supported by AI-assisted tools. The authors are solely responsible for the accuracy, originality and integrity of the work presented in this paper.
 
 ## How to cite
 
